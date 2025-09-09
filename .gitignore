@@ -13,3 +13,6 @@
 !.gitkeep
 /tigerbeetle_api
 /config/VERSION.txt
+
+.idea
+opt

@@ -1,0 +1,905 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "TigerBeetle API",
+    "description": "A high-performance accounting database API",
+    "version": "1.0.0",
+    "contact": {
+      "url": "https://tigerbeetle.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000",
+      "description": "Local development server"
+    }
+  ],
+  "paths": {
+    "/id": {
+      "get": {
+        "summary": "Get unique ID",
+        "operationId": "getId",
+        "responses": {
+          "200": {
+            "description": "Unique ID generated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Unique identifier"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/ping": {
+      "get": {
+        "summary": "Health check endpoint",
+        "operationId": "ping",
+        "responses": {
+          "200": {
+            "description": "Service is healthy",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "pong"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/accounts/create": {
+      "post": {
+        "summary": "Create accounts",
+        "operationId": "createAccounts",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "accounts": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Account"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Account creation results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CreateAccountResult"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/accounts/lookup": {
+      "post": {
+        "summary": "Lookup accounts by ID",
+        "operationId": "lookupAccounts",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "account_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Found accounts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "accounts": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Account"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/accounts/query": {
+      "post": {
+        "summary": "Query accounts with filters",
+        "operationId": "queryAccounts",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "filter": {
+                    "$ref": "#/components/schemas/QueryFilter"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Matching accounts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "accounts": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Account"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/transfers/create": {
+      "post": {
+        "summary": "Create transfers",
+        "operationId": "createTransfers",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "transfers": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Transfer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Transfer creation results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CreateTransferResult"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/transfers/lookup": {
+      "post": {
+        "summary": "Lookup transfers by ID",
+        "operationId": "lookupTransfers",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "transfer_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Found transfers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "transfers": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Transfer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/transfers/query": {
+      "post": {
+        "summary": "Query transfers with filters",
+        "operationId": "queryTransfers",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "filter": {
+                    "$ref": "#/components/schemas/QueryFilter"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Matching transfers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "transfers": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Transfer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/account/transfers": {
+      "post": {
+        "summary": "Get transfers for an account",
+        "operationId": "getAccountTransfers",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "filter": {
+                    "$ref": "#/components/schemas/AccountFilter"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Account transfers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "transfers": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Transfer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/account/balances": {
+      "post": {
+        "summary": "Get account balances",
+        "operationId": "getAccountBalances",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "filter": {
+                    "$ref": "#/components/schemas/AccountFilter"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Account balances",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "account_balances": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/AccountBalance"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Account": {
+        "type": "object",
+        "required": [
+          "id",
+          "ledger",
+          "code"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Account identifier"
+          },
+          "debits_pending": {
+            "type": "string",
+            "format": "uint64",
+            "description": "Pending debit amount"
+          },
+          "debits_posted": {
+            "type": "string",
+            "format": "uint64",
+            "description": "Posted debit amount"
+          },
+          "credits_pending": {
+            "type": "string",
+            "format": "uint64",
+            "description": "Pending credit amount"
+          },
+          "credits_posted": {
+            "type": "string",
+            "format": "uint64",
+            "description": "Posted credit amount"
+          },
+          "user_data128": {
+            "type": "string",
+            "description": "User-defined data (128-bit)"
+          },
+          "user_data64": {
+            "type": "string",
+            "format": "uint64",
+            "description": "User-defined data (64-bit)"
+          },
+          "user_data32": {
+            "type": "integer",
+            "format": "uint32",
+            "description": "User-defined data (32-bit)"
+          },
+          "ledger": {
+            "type": "integer",
+            "format": "uint32",
+            "description": "Ledger ID"
+          },
+          "code": {
+            "type": "integer",
+            "format": "uint32",
+            "description": "Account code"
+          },
+          "flags": {
+            "$ref": "#/components/schemas/AccountFlags"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "uint64",
+            "description": "Account timestamp"
+          }
+        }
+      },
+      "AccountFlags": {
+        "type": "object",
+        "properties": {
+          "linked": {
+            "type": "boolean",
+            "description": "Account is linked to next account"
+          },
+          "debits_must_not_exceed_credits": {
+            "type": "boolean",
+            "description": "Debits must not exceed credits"
+          },
+          "credits_must_not_exceed_debits": {
+            "type": "boolean",
+            "description": "Credits must not exceed debits"
+          },
+          "history": {
+            "type": "boolean",
+            "description": "Enable account history"
+          }
+        }
+      },
+      "Transfer": {
+        "type": "object",
+        "required": [
+          "id",
+          "debit_account_id",
+          "credit_account_id",
+          "amount",
+          "ledger",
+          "code"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Transfer identifier"
+          },
+          "debit_account_id": {
+            "type": "string",
+            "description": "Debit account ID"
+          },
+          "credit_account_id": {
+            "type": "string",
+            "description": "Credit account ID"
+          },
+          "amount": {
+            "type": "string",
+            "format": "int64",
+            "description": "Transfer amount"
+          },
+          "pending_id": {
+            "type": "string",
+            "description": "Pending transfer ID"
+          },
+          "user_data128": {
+            "type": "string",
+            "description": "User-defined data (128-bit)"
+          },
+          "user_data64": {
+            "type": "string",
+            "format": "uint64",
+            "description": "User-defined data (64-bit)"
+          },
+          "user_data32": {
+            "type": "integer",
+            "format": "uint32",
+            "description": "User-defined data (32-bit)"
+          },
+          "ledger": {
+            "type": "integer",
+            "format": "uint32",
+            "description": "Ledger ID"
+          },
+          "code": {
+            "type": "integer",
+            "format": "uint32",
+            "description": "Transfer code"
+          },
+          "transfer_flags": {
+            "$ref": "#/components/schemas/TransferFlags"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "uint64",
+            "description": "Transfer timestamp"
+          }
+        }
+      },
+      "TransferFlags": {
+        "type": "object",
+        "properties": {
+          "linked": {
+            "type": "boolean",
+            "description": "Transfer is linked to next transfer"
+          },
+          "pending": {
+            "type": "boolean",
+            "description": "Transfer is pending"
+          },
+          "post_pending_transfer": {
+            "type": "boolean",
+            "description": "Post pending transfer"
+          },
+          "void_pending_transfer": {
+            "type": "boolean",
+            "description": "Void pending transfer"
+          },
+          "balancing_debit": {
+            "type": "boolean",
+            "description": "Balancing debit"
+          },
+          "balancing_credit": {
+            "type": "boolean",
+            "description": "Balancing credit"
+          }
+        }
+      },
+      "AccountFilter": {
+        "type": "object",
+        "required": [
+          "account_id",
+          "limit"
+        ],
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "description": "Account ID to filter by"
+          },
+          "timestamp_min": {
+            "type": "string",
+            "format": "uint64",
+            "description": "Minimum timestamp"
+          },
+          "timestamp_max": {
+            "type": "string",
+            "format": "uint64",
+            "description": "Maximum timestamp"
+          },
+          "limit": {
+            "type": "integer",
+            "format": "uint32",
+            "description": "Maximum number of results"
+          },
+          "flags": {
+            "$ref": "#/components/schemas/AccountFilterFlags"
+          }
+        }
+      },
+      "AccountFilterFlags": {
+        "type": "object",
+        "properties": {
+          "debits": {
+            "type": "boolean",
+            "description": "Include debit transfers"
+          },
+          "credits": {
+            "type": "boolean",
+            "description": "Include credit transfers"
+          },
+          "reversed": {
+            "type": "boolean",
+            "description": "Return results in reverse chronological order"
+          }
+        }
+      },
+      "AccountBalance": {
+        "type": "object",
+        "properties": {
+          "debits_pending": {
+            "type": "string",
+            "format": "uint64",
+            "description": "Pending debit amount"
+          },
+          "debits_posted": {
+            "type": "string",
+            "format": "uint64",
+            "description": "Posted debit amount"
+          },
+          "credits_pending": {
+            "type": "string",
+            "format": "uint64",
+            "description": "Pending credit amount"
+          },
+          "credits_posted": {
+            "type": "string",
+            "format": "uint64",
+            "description": "Posted credit amount"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "uint64",
+            "description": "Balance timestamp"
+          }
+        }
+      },
+      "QueryFilter": {
+        "type": "object",
+        "required": [
+          "limit"
+        ],
+        "properties": {
+          "user_data128": {
+            "type": "string",
+            "description": "Filter by user data (128-bit)"
+          },
+          "user_data64": {
+            "type": "string",
+            "format": "uint64",
+            "description": "Filter by user data (64-bit)"
+          },
+          "user_data32": {
+            "type": "integer",
+            "format": "uint32",
+            "description": "Filter by user data (32-bit)"
+          },
+          "code": {
+            "type": "integer",
+            "format": "uint32",
+            "description": "Filter by code"
+          },
+          "ledger": {
+            "type": "integer",
+            "format": "uint32",
+            "description": "Filter by ledger"
+          },
+          "timestamp_min": {
+            "type": "string",
+            "format": "uint64",
+            "description": "Minimum timestamp"
+          },
+          "timestamp_max": {
+            "type": "string",
+            "format": "uint64",
+            "description": "Maximum timestamp"
+          },
+          "limit": {
+            "type": "integer",
+            "format": "uint32",
+            "description": "Maximum number of results"
+          },
+          "flags": {
+            "$ref": "#/components/schemas/QueryFilterFlags"
+          }
+        }
+      },
+      "QueryFilterFlags": {
+        "type": "object",
+        "properties": {
+          "reversed": {
+            "type": "boolean",
+            "description": "Return results in reverse chronological order"
+          }
+        }
+      },
+      "CreateAccountResult": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Index of the account in the request"
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "AccountOK",
+              "AccountLinkedEventFailed",
+              "AccountLinkedEventChainOpen",
+              "AccountImportedEventExpected",
+              "AccountImportedEventNotExpected",
+              "AccountTimestampMustBeZero",
+              "AccountImportedEventTimestampOutOfRange",
+              "AccountImportedEventTimestampMustNotAdvance",
+              "AccountReservedField",
+              "AccountReservedFlag",
+              "AccountIDMustNotBeZero",
+              "AccountIDMustNotBeIntMax",
+              "AccountExistsWithDifferentFlags",
+              "AccountExistsWithDifferentUserData128",
+              "AccountExistsWithDifferentUserData64",
+              "AccountExistsWithDifferentUserData32",
+              "AccountExistsWithDifferentLedger",
+              "AccountExistsWithDifferentCode",
+              "AccountExists",
+              "AccountFlagsAreMutuallyExclusive",
+              "AccountDebitsPendingMustBeZero",
+              "AccountDebitsPostedMustBeZero",
+              "AccountCreditsPendingMustBeZero",
+              "AccountCreditsPostedMustBeZero",
+              "AccountLedgerMustNotBeZero",
+              "AccountCodeMustNotBeZero",
+              "AccountImportedEventTimestampMustNotRegress"
+            ],
+            "description": "Result of account creation"
+          }
+        }
+      },
+      "CreateTransferResult": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Index of the transfer in the request"
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "TransferOK",
+              "TransferLinkedEventFailed",
+              "TransferLinkedEventChainOpen",
+              "TransferImportedEventExpected",
+              "TransferImportedEventNotExpected",
+              "TransferTimestampMustBeZero",
+              "TransferImportedEventTimestampOutOfRange",
+              "TransferImportedEventTimestampMustNotAdvance",
+              "TransferReservedFlag",
+              "TransferIDMustNotBeZero",
+              "TransferIDMustNotBeIntMax",
+              "TransferExistsWithDifferentFlags",
+              "TransferExistsWithDifferentPendingID",
+              "TransferExistsWithDifferentTimeout",
+              "TransferExistsWithDifferentDebitAccountID",
+              "TransferExistsWithDifferentCreditAccountID",
+              "TransferExistsWithDifferentAmount",
+              "TransferExistsWithDifferentUserData128",
+              "TransferExistsWithDifferentUserData64",
+              "TransferExistsWithDifferentUserData32",
+              "TransferExistsWithDifferentLedger",
+              "TransferExistsWithDifferentCode",
+              "TransferExists",
+              "TransferIDAlreadyFailed",
+              "TransferFlagsAreMutuallyExclusive",
+              "TransferDebitAccountIDMustNotBeZero",
+              "TransferDebitAccountIDMustNotBeIntMax",
+              "TransferCreditAccountIDMustNotBeZero",
+              "TransferCreditAccountIDMustNotBeIntMax",
+              "TransferAccountsMustBeDifferent",
+              "TransferPendingIDMustBeZero",
+              "TransferPendingIDMustNotBeZero",
+              "TransferPendingIDMustNotBeIntMax",
+              "TransferPendingIDMustBeDifferent",
+              "TransferTimeoutReservedForPendingTransfer",
+              "TransferClosingTransferMustBePending",
+              "TransferAmountMustNotBeZero",
+              "TransferLedgerMustNotBeZero",
+              "TransferCodeMustNotBeZero",
+              "TransferDebitAccountNotFound",
+              "TransferCreditAccountNotFound",
+              "TransferAccountsMustHaveTheSameLedger",
+              "TransferTransferMustHaveTheSameLedgerAsAccounts",
+              "TransferPendingTransferNotFound"
+            ],
+            "description": "Result of transfer creation"
+          },
+          "id": {
+            "type": "string",
+            "description": "Transfer ID if successful"
+          }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Bad request",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "Internal server error",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
