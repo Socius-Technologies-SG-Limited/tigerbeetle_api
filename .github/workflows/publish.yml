@@ -66,8 +66,9 @@ jobs:
         run: make release-linux-amd64-cross-compile
       - name: Build Linux ARM64
         run: make release-linux-arm64-cross-compile
-      - name: Build Darwin ARM64
-        run: make release-darwin-arm64
+      # n.b. Darwin cross-compilation seems to not work on github actions atm
+      # - name: Build Darwin ARM64
+      #   run: make release-darwin-arm64
       # Upload binaries as artifacts
       - name: Upload binaries
         uses: actions/upload-artifact@v4
