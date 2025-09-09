@@ -118,6 +118,10 @@ jobs:
             ${{ runner.os }}-buildx-
       - name: Add version file
         run: printf %s "${{ github.sha }}" > config/VERSION.txt
+      # Convert repository owner to lowercase for Docker tags
+      - name: Set lowercase repository owner
+        id: lowercase
+        run: echo "repo_owner=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
         # Build and push the Docker image
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
@@ -128,8 +132,8 @@ jobs:
           push: true
           # Define the tags for the image
           tags: |
-            ghcr.io/${{ github.repository_owner }}/tigerbeetle_api:latest
-            ghcr.io/${{ github.repository_owner }}/tigerbeetle_api:${{ github.sha }}
+            ghcr.io/${{ steps.lowercase.outputs.repo_owner }}/tigerbeetle_api:latest
+            ghcr.io/${{ steps.lowercase.outputs.repo_owner }}/tigerbeetle_api:${{ github.sha }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
         # (Optional) Display Docker image details
