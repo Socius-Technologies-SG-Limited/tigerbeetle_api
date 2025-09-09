@@ -84,7 +84,7 @@ jobs:
           files: |
             build/tigerbeetle_api_linux_amd64
             build/tigerbeetle_api_linux_arm64
-            build/tigerbeetle_api_darwin_arm64
+        #   build/tigerbeetle_api_darwin_arm64 # turn back on once we are building darwin versions
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
