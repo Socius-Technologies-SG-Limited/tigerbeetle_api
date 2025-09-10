@@ -95,6 +95,9 @@ export interface TransferFlags {
   void_pending_transfer?: bool;
   balancing_debit?: bool;
   balancing_credit?: bool;
+  closing_debit?: bool;
+  closing_credit?: bool;
+  imported?: bool;
 }
 
 export interface AccountFilter {

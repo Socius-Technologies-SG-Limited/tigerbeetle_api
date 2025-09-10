@@ -130,6 +130,9 @@ message TransferFlags {
   optional bool void_pending_transfer = 4;
   optional bool balancing_debit = 5;
   optional bool balancing_credit = 6;
+  optional bool closing_debit = 7;
+  optional bool closing_credit = 8;
+  optional bool imported = 9;
 }
 
 message AccountFilter {

@@ -41,6 +41,9 @@ func TransferToProtoTransfer(tbTransfer types.Transfer) *proto.Transfer {
 		VoidPendingTransfer: lo.ToPtr(tbFlags.VoidPendingTransfer),
 		BalancingDebit:      lo.ToPtr(tbFlags.BalancingDebit),
 		BalancingCredit:     lo.ToPtr(tbFlags.BalancingCredit),
+		ClosingDebit:        lo.ToPtr(tbFlags.ClosingDebit),
+		ClosingCredit:       lo.ToPtr(tbFlags.ClosingCredit),
+		Imported:            lo.ToPtr(tbFlags.Imported),
 	}
 	var pendingId string
 	emptyUint128 := types.Uint128{}

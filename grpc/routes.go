@@ -208,6 +208,9 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 			flags.VoidPendingTransfer = lo.FromPtrOr(inTransfer.TransferFlags.VoidPendingTransfer, false)
 			flags.BalancingDebit = lo.FromPtrOr(inTransfer.TransferFlags.BalancingDebit, false)
 			flags.BalancingCredit = lo.FromPtrOr(inTransfer.TransferFlags.BalancingCredit, false)
+			flags.ClosingDebit = lo.FromPtrOr(inTransfer.TransferFlags.ClosingDebit, false)
+			flags.ClosingCredit = lo.FromPtrOr(inTransfer.TransferFlags.ClosingCredit, false)
+			flags.Imported = lo.FromPtrOr(inTransfer.TransferFlags.Imported, false)
 		}
 		debitAccountID, err := HexStringToUint128(inTransfer.DebitAccountId)
 		if err != nil {

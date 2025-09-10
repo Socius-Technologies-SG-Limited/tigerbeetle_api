@@ -639,6 +639,18 @@
           "balancing_credit": {
             "type": "boolean",
             "description": "Balancing credit"
+          },
+          "closing_debit": {
+            "type": "boolean",
+            "description": "Close the debit account when transfer succeeds"
+          },
+          "closing_credit": {
+            "type": "boolean",
+            "description": "Close the credit account when transfer succeeds"
+          },
+          "imported": {
+            "type": "boolean",
+            "description": "Allow importing historical transfers with original timestamps"
           }
         }
       },
