@@ -465,22 +465,22 @@
             "description": "Account identifier"
           },
           "debits_pending": {
-            "type": "string",
+            "type": "integer",
             "format": "uint64",
             "description": "Pending debit amount"
           },
           "debits_posted": {
-            "type": "string",
+            "type": "integer",
             "format": "uint64",
             "description": "Posted debit amount"
           },
           "credits_pending": {
-            "type": "string",
+            "type": "integer",
             "format": "uint64",
             "description": "Pending credit amount"
           },
           "credits_posted": {
-            "type": "string",
+            "type": "integer",
             "format": "uint64",
             "description": "Posted credit amount"
           },
@@ -489,7 +489,7 @@
             "description": "User-defined data (128-bit)"
           },
           "user_data64": {
-            "type": "string",
+            "type": "integer",
             "format": "uint64",
             "description": "User-defined data (64-bit)"
           },
@@ -512,7 +512,7 @@
             "$ref": "#/components/schemas/AccountFlags"
           },
           "timestamp": {
-            "type": "string",
+            "type": "integer",
             "format": "uint64",
             "description": "Account timestamp"
           }
@@ -563,7 +563,7 @@
             "description": "Credit account ID"
           },
           "amount": {
-            "type": "string",
+            "type": "integer",
             "format": "int64",
             "description": "Transfer amount"
           },
@@ -576,8 +576,16 @@
             "description": "User-defined data (128-bit)"
           },
           "user_data64": {
-            "type": "string",
-            "format": "uint64",
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uint64"
+              },
+              {
+                "type": "integer",
+                "format": "uint64"
+              }
+            ],
             "description": "User-defined data (64-bit)"
           },
           "user_data32": {
@@ -599,7 +607,7 @@
             "$ref": "#/components/schemas/TransferFlags"
           },
           "timestamp": {
-            "type": "string",
+            "type": "integer",
             "format": "uint64",
             "description": "Transfer timestamp"
           }
@@ -646,12 +654,12 @@
             "description": "Account ID to filter by"
           },
           "timestamp_min": {
-            "type": "string",
+            "type": "integer",
             "format": "uint64",
             "description": "Minimum timestamp"
           },
           "timestamp_max": {
-            "type": "string",
+            "type": "integer",
             "format": "uint64",
             "description": "Maximum timestamp"
           },
@@ -686,27 +694,27 @@
         "type": "object",
         "properties": {
           "debits_pending": {
-            "type": "string",
+            "type": "integer",
             "format": "uint64",
             "description": "Pending debit amount"
           },
           "debits_posted": {
-            "type": "string",
+            "type": "integer",
             "format": "uint64",
             "description": "Posted debit amount"
           },
           "credits_pending": {
-            "type": "string",
+            "type": "integer",
             "format": "uint64",
             "description": "Pending credit amount"
           },
           "credits_posted": {
-            "type": "string",
+            "type": "integer",
             "format": "uint64",
             "description": "Posted credit amount"
           },
           "timestamp": {
-            "type": "string",
+            "type": "integer",
             "format": "uint64",
             "description": "Balance timestamp"
           }
@@ -723,7 +731,7 @@
             "description": "Filter by user data (128-bit)"
           },
           "user_data64": {
-            "type": "string",
+            "type": "integer",
             "format": "uint64",
             "description": "Filter by user data (64-bit)"
           },
@@ -743,12 +751,12 @@
             "description": "Filter by ledger"
           },
           "timestamp_min": {
-            "type": "string",
+            "type": "integer",
             "format": "uint64",
             "description": "Minimum timestamp"
           },
           "timestamp_max": {
-            "type": "string",
+            "type": "integer",
             "format": "uint64",
             "description": "Maximum timestamp"
           },
