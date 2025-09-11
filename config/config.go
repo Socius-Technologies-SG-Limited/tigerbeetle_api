@@ -33,6 +33,8 @@ type config struct {
 
 	IsDryRun bool
 
+	VerboseLogging bool
+
 	PrometheusAddr string
 }
 
@@ -107,6 +109,8 @@ func NewConfig() (ok bool) {
 		BufferCluster: bufferCluster,
 
 		IsDryRun: os.Getenv("IS_DRY_RUN") == "true",
+
+		VerboseLogging: os.Getenv("VERBOSE_LOGGING") == "true",
 
 		PrometheusAddr: prometheusAddr,
 	}

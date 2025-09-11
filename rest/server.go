@@ -2,6 +2,7 @@ package rest
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"log/slog"
@@ -85,12 +86,25 @@ func grpcHandle[In any, Out any](f func(ctx context.Context, in *In) (out *Out, 
 			c.String(http.StatusBadRequest, errStr)
 			return
 		}
+
+		if config.Config.VerboseLogging {
+			if reqBody, err := json.Marshal(in); err == nil {
+				slog.Info("REST Request", "method", c.Request.Method, "path", c.Request.URL.Path, "body", string(reqBody))
+			}
+		}
+
 		out, err := f(c.Request.Context(), &in)
 		if err != nil {
 			errStr := err.Error()
 			slog.Error(errStr)
 			c.String(http.StatusInternalServerError, errStr)
 			return
+		}
+
+		if config.Config.VerboseLogging {
+			if respBody, err := json.Marshal(out); err == nil {
+				slog.Info("REST Response", "method", c.Request.Method, "path", c.Request.URL.Path, "status", http.StatusOK, "body", string(respBody))
+			}
 		}
 
 		c.JSON(http.StatusOK, out)

@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"log/slog"
 	"math/rand/v2"
@@ -171,10 +172,25 @@ func (s *App) CreateAccounts(ctx context.Context, in *proto.CreateAccountsReques
 		})
 	}
 
+	if config.Config.VerboseLogging {
+		if accountsJson, err := json.Marshal(accounts); err == nil {
+			slog.Info("TigerBeetle CreateAccounts Request", "count", len(accounts), "accounts", string(accountsJson))
+		}
+	}
+
 	metrics.TotalTbCreateAccountsCall.Inc()
 	results, err := s.TB.CreateAccounts(accounts)
 	if err != nil {
+		if config.Config.VerboseLogging {
+			slog.Error("TigerBeetle CreateAccounts Error", "error", err)
+		}
 		return nil, err
+	}
+
+	if config.Config.VerboseLogging {
+		if resultsJson, err := json.Marshal(results); err == nil {
+			slog.Info("TigerBeetle CreateAccounts Response", "result_count", len(results), "results", string(resultsJson))
+		}
 	}
 
 	resArr := []*proto.CreateAccountsReplyItem{}
@@ -245,9 +261,18 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 		})
 	}
 
+	if config.Config.VerboseLogging {
+		if transfersJson, err := json.Marshal(transfers); err == nil {
+			slog.Info("TigerBeetle CreateTransfers Request", "count", len(transfers), "transfers", string(transfersJson))
+		}
+	}
+
 	var err error
 	var replies []*proto.CreateTransfersReplyItem
 	if config.Config.IsBuffered {
+		if config.Config.VerboseLogging {
+			slog.Info("Using buffered mode for CreateTransfers", "buffer_size", config.Config.BufferSize)
+		}
 		buf := s.getRandomTBuf()
 		c := make(chan TimedPayloadResponse)
 		buf.Put(TimedPayload{
@@ -270,7 +295,16 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 	}
 
 	if err != nil {
+		if config.Config.VerboseLogging {
+			slog.Error("TigerBeetle CreateTransfers Error", "error", err)
+		}
 		return nil, err
+	}
+
+	if config.Config.VerboseLogging {
+		if repliesJson, err := json.Marshal(replies); err == nil {
+			slog.Info("TigerBeetle CreateTransfers Response", "result_count", len(replies), "results", string(repliesJson))
+		}
 	}
 
 	return &proto.CreateTransfersReply{
@@ -291,10 +325,25 @@ func (s *App) LookupAccounts(ctx context.Context, in *proto.LookupAccountsReques
 		ids = append(ids, *id)
 	}
 
+	if config.Config.VerboseLogging {
+		if idsJson, err := json.Marshal(ids); err == nil {
+			slog.Info("TigerBeetle LookupAccounts Request", "count", len(ids), "ids", string(idsJson))
+		}
+	}
+
 	metrics.TotalTbLookupAccountsCall.Inc()
 	res, err := s.TB.LookupAccounts(ids)
 	if err != nil {
+		if config.Config.VerboseLogging {
+			slog.Error("TigerBeetle LookupAccounts Error", "error", err)
+		}
 		return nil, err
+	}
+
+	if config.Config.VerboseLogging {
+		if resJson, err := json.Marshal(res); err == nil {
+			slog.Info("TigerBeetle LookupAccounts Response", "found_count", len(res), "accounts", string(resJson))
+		}
 	}
 
 	pAccounts := lo.Map(res, func(a types.Account, _ int) *proto.Account {
@@ -316,10 +365,25 @@ func (s *App) LookupTransfers(ctx context.Context, in *proto.LookupTransfersRequ
 		ids = append(ids, *id)
 	}
 
+	if config.Config.VerboseLogging {
+		if idsJson, err := json.Marshal(ids); err == nil {
+			slog.Info("TigerBeetle LookupTransfers Request", "count", len(ids), "ids", string(idsJson))
+		}
+	}
+
 	metrics.TotalTbLookupTransfersCall.Inc()
 	res, err := s.TB.LookupTransfers(ids)
 	if err != nil {
+		if config.Config.VerboseLogging {
+			slog.Error("TigerBeetle LookupTransfers Error", "error", err)
+		}
 		return nil, err
+	}
+
+	if config.Config.VerboseLogging {
+		if resJson, err := json.Marshal(res); err == nil {
+			slog.Info("TigerBeetle LookupTransfers Response", "found_count", len(res), "transfers", string(resJson))
+		}
 	}
 
 	pTransfers := lo.Map(res, func(a types.Transfer, _ int) *proto.Transfer {
@@ -336,10 +400,25 @@ func (s *App) GetAccountTransfers(ctx context.Context, in *proto.GetAccountTrans
 	if err != nil {
 		return nil, err
 	}
+	if config.Config.VerboseLogging {
+		if filterJson, err := json.Marshal(tbFilter); err == nil {
+			slog.Info("TigerBeetle GetAccountTransfers Request", "filter", string(filterJson))
+		}
+	}
+
 	metrics.TotalTbGetAccountTransfersCall.Inc()
 	res, err := s.TB.GetAccountTransfers(*tbFilter)
 	if err != nil {
+		if config.Config.VerboseLogging {
+			slog.Error("TigerBeetle GetAccountTransfers Error", "error", err)
+		}
 		return nil, err
+	}
+
+	if config.Config.VerboseLogging {
+		if resJson, err := json.Marshal(res); err == nil {
+			slog.Info("TigerBeetle GetAccountTransfers Response", "result_count", len(res), "transfers", string(resJson))
+		}
 	}
 
 	pTransfers := lo.Map(res, func(v types.Transfer, _ int) *proto.Transfer {
@@ -356,10 +435,25 @@ func (s *App) GetAccountBalances(ctx context.Context, in *proto.GetAccountBalanc
 	if err != nil {
 		return nil, err
 	}
+	if config.Config.VerboseLogging {
+		if filterJson, err := json.Marshal(tbFilter); err == nil {
+			slog.Info("TigerBeetle GetAccountBalances Request", "filter", string(filterJson))
+		}
+	}
+
 	metrics.TotalTbGetAccountBalancesCall.Inc()
 	res, err := s.TB.GetAccountBalances(*tbFilter)
 	if err != nil {
+		if config.Config.VerboseLogging {
+			slog.Error("TigerBeetle GetAccountBalances Error", "error", err)
+		}
 		return nil, err
+	}
+
+	if config.Config.VerboseLogging {
+		if resJson, err := json.Marshal(res); err == nil {
+			slog.Info("TigerBeetle GetAccountBalances Response", "result_count", len(res), "balances", string(resJson))
+		}
 	}
 
 	pBalances := lo.Map(res, func(v types.AccountBalance, _ int) *proto.AccountBalance {
@@ -381,10 +475,25 @@ func (s *App) QueryTransfers(ctx context.Context, in *proto.QueryTransfersReques
 		return nil, err
 	}
 
+	if config.Config.VerboseLogging {
+		if filterJson, err := json.Marshal(tbFilter); err == nil {
+			slog.Info("TigerBeetle QueryTransfers Request", "filter", string(filterJson))
+		}
+	}
+
 	metrics.TotalTbQueryTransfersCall.Inc()
 	res, err := s.TB.QueryTransfers(*tbFilter)
 	if err != nil {
+		if config.Config.VerboseLogging {
+			slog.Error("TigerBeetle QueryTransfers Error", "error", err)
+		}
 		return nil, err
+	}
+
+	if config.Config.VerboseLogging {
+		if resJson, err := json.Marshal(res); err == nil {
+			slog.Info("TigerBeetle QueryTransfers Response", "result_count", len(res), "transfers", string(resJson))
+		}
 	}
 
 	pTransfers := lo.Map(res, func(v types.Transfer, _ int) *proto.Transfer {
@@ -406,10 +515,25 @@ func (s *App) QueryAccounts(ctx context.Context, in *proto.QueryAccountsRequest)
 		return nil, err
 	}
 
+	if config.Config.VerboseLogging {
+		if filterJson, err := json.Marshal(tbFilter); err == nil {
+			slog.Info("TigerBeetle QueryAccounts Request", "filter", string(filterJson))
+		}
+	}
+
 	metrics.TotalTbQueryAccountsCall.Inc()
 	res, err := s.TB.QueryAccounts(*tbFilter)
 	if err != nil {
+		if config.Config.VerboseLogging {
+			slog.Error("TigerBeetle QueryAccounts Error", "error", err)
+		}
 		return nil, err
+	}
+
+	if config.Config.VerboseLogging {
+		if resJson, err := json.Marshal(res); err == nil {
+			slog.Info("TigerBeetle QueryAccounts Response", "result_count", len(res), "accounts", string(resJson))
+		}
 	}
 
 	pAccounts := lo.Map(res, func(v types.Account, _ int) *proto.Account {
