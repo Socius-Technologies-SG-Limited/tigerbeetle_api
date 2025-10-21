@@ -106,6 +106,7 @@ message AccountFlags {
   optional bool debits_must_not_exceed_credits = 2;
   optional bool credits_must_not_exceed_debits = 3;
   optional bool history                        = 4;
+  optional bool closed                         = 5;
 }
 
 message Transfer {
