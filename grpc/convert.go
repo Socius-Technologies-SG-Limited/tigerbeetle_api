@@ -15,6 +15,7 @@ func AccountToProtoAccount(tbAccount types.Account) *proto.Account {
 		DebitsMustNotExceedCredits: lo.ToPtr(tbFlags.DebitsMustNotExceedCredits),
 		CreditsMustNotExceedDebits: lo.ToPtr(tbFlags.CreditsMustNotExceedDebits),
 		History:                    lo.ToPtr(tbFlags.History),
+		Closed:                     lo.ToPtr(tbFlags.Closed),
 	}
 	return &proto.Account{
 		Id:             tbAccount.ID.String(),
