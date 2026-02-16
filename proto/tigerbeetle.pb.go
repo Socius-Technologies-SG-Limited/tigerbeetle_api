@@ -1742,6 +1742,10 @@ type AccountFilter struct {
 	TimestampMax  *uint64                `protobuf:"varint,3,opt,name=timestamp_max,json=timestampMax,proto3,oneof" json:"timestamp_max,omitempty"`
 	Limit         uint32                 `protobuf:"varint,4,opt,name=limit,proto3" json:"limit,omitempty"`
 	Flags         *AccountFilterFlags    `protobuf:"bytes,5,opt,name=flags,proto3,oneof" json:"flags,omitempty"`
+	UserData128   *string                `protobuf:"bytes,6,opt,name=user_data128,json=userData128,proto3,oneof" json:"user_data128,omitempty"`
+	UserData64    *uint64                `protobuf:"varint,7,opt,name=user_data64,json=userData64,proto3,oneof" json:"user_data64,omitempty"`
+	UserData32    *uint32                `protobuf:"varint,8,opt,name=user_data32,json=userData32,proto3,oneof" json:"user_data32,omitempty"`
+	Code          *uint32                `protobuf:"varint,9,opt,name=code,proto3,oneof" json:"code,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1809,6 +1813,34 @@ func (x *AccountFilter) GetFlags() *AccountFilterFlags {
 		return x.Flags
 	}
 	return nil
+}
+
+func (x *AccountFilter) GetUserData128() string {
+	if x != nil && x.UserData128 != nil {
+		return *x.UserData128
+	}
+	return ""
+}
+
+func (x *AccountFilter) GetUserData64() uint64 {
+	if x != nil && x.UserData64 != nil {
+		return *x.UserData64
+	}
+	return 0
+}
+
+func (x *AccountFilter) GetUserData32() uint32 {
+	if x != nil && x.UserData32 != nil {
+		return *x.UserData32
+	}
+	return 0
+}
+
+func (x *AccountFilter) GetCode() uint32 {
+	if x != nil && x.Code != nil {
+		return *x.Code
+	}
+	return 0
 }
 
 type AccountFilterFlags struct {
@@ -2215,17 +2247,27 @@ const file_proto_tigerbeetle_proto_rawDesc = "" +
 	"\x11_balancing_creditB\x10\n" +
 	"\x0e_closing_debitB\x11\n" +
 	"\x0f_closing_creditB\v\n" +
-	"\t_imported\"\xfc\x01\n" +
+	"\t_imported\"\xc3\x03\n" +
 	"\rAccountFilter\x12\x1d\n" +
 	"\n" +
 	"account_id\x18\x01 \x01(\tR\taccountId\x12(\n" +
 	"\rtimestamp_min\x18\x02 \x01(\x04H\x00R\ftimestampMin\x88\x01\x01\x12(\n" +
 	"\rtimestamp_max\x18\x03 \x01(\x04H\x01R\ftimestampMax\x88\x01\x01\x12\x14\n" +
 	"\x05limit\x18\x04 \x01(\rR\x05limit\x124\n" +
-	"\x05flags\x18\x05 \x01(\v2\x19.proto.AccountFilterFlagsH\x02R\x05flags\x88\x01\x01B\x10\n" +
+	"\x05flags\x18\x05 \x01(\v2\x19.proto.AccountFilterFlagsH\x02R\x05flags\x88\x01\x01\x12&\n" +
+	"\fuser_data128\x18\x06 \x01(\tH\x03R\vuserData128\x88\x01\x01\x12$\n" +
+	"\vuser_data64\x18\a \x01(\x04H\x04R\n" +
+	"userData64\x88\x01\x01\x12$\n" +
+	"\vuser_data32\x18\b \x01(\rH\x05R\n" +
+	"userData32\x88\x01\x01\x12\x17\n" +
+	"\x04code\x18\t \x01(\rH\x06R\x04code\x88\x01\x01B\x10\n" +
 	"\x0e_timestamp_minB\x10\n" +
 	"\x0e_timestamp_maxB\b\n" +
-	"\x06_flags\"\x95\x01\n" +
+	"\x06_flagsB\x0f\n" +
+	"\r_user_data128B\x0e\n" +
+	"\f_user_data64B\x0e\n" +
+	"\f_user_data32B\a\n" +
+	"\x05_code\"\x95\x01\n" +
 	"\x12AccountFilterFlags\x12\x1b\n" +
 	"\x06debits\x18\x01 \x01(\bH\x00R\x06debits\x88\x01\x01\x12\x1d\n" +
 	"\acredits\x18\x02 \x01(\bH\x01R\acredits\x88\x01\x01\x12\x1f\n" +
