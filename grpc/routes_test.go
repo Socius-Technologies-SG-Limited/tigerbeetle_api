@@ -1,6 +1,7 @@
 package grpc
 
 import (
+	"math/big"
 	"sync"
 	"testing"
 	"time"
@@ -8,7 +9,49 @@ import (
 	"github.com/charithe/timedbuf/v2"
 	"github.com/lil5/tigerbeetle_api/config"
 	"github.com/stretchr/testify/assert"
+	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
 )
+
+func TestParseClusterID(t *testing.T) {
+	t.Run("zero", func(t *testing.T) {
+		id, err := ParseClusterID("0")
+		assert.NoError(t, err)
+		assert.Equal(t, types.ToUint128(0), id)
+	})
+
+	t.Run("small value", func(t *testing.T) {
+		id, err := ParseClusterID("12345")
+		assert.NoError(t, err)
+		assert.Equal(t, types.ToUint128(12345), id)
+	})
+
+	t.Run("max uint64", func(t *testing.T) {
+		id, err := ParseClusterID("18446744073709551615")
+		assert.NoError(t, err)
+		assert.Equal(t, types.ToUint128(^uint64(0)), id)
+	})
+
+	t.Run("u128 larger than uint64", func(t *testing.T) {
+		input := "2141303564190936097871303759524773179"
+		id, err := ParseClusterID(input)
+		assert.NoError(t, err)
+		// Round-trip: convert back to big.Int and compare
+		got := id.BigInt()
+		expected, ok := new(big.Int).SetString(input, 10)
+		assert.True(t, ok)
+		assert.Equal(t, 0, got.Cmp(expected), "expected %s, got %s", expected.String(), got.String())
+	})
+
+	t.Run("invalid string", func(t *testing.T) {
+		_, err := ParseClusterID("not-a-number")
+		assert.Error(t, err)
+	})
+
+	t.Run("empty string", func(t *testing.T) {
+		_, err := ParseClusterID("")
+		assert.Error(t, err)
+	})
+}
 
 func TestGetRandomBufferCluster(t *testing.T) {
 	n := 100000
