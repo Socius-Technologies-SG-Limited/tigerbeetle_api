@@ -1,6 +1,7 @@
 package grpc
 
 import (
+	"errors"
 	"math/big"
 	"sync"
 	"testing"
@@ -50,6 +51,26 @@ func TestParseClusterID(t *testing.T) {
 	t.Run("empty string", func(t *testing.T) {
 		_, err := ParseClusterID("")
 		assert.Error(t, err)
+	})
+}
+
+func TestHealth(t *testing.T) {
+	t.Run("returns nil when TB is healthy", func(t *testing.T) {
+		mockClient := new(MockTigerBeetleClient)
+		app := &App{TB: mockClient}
+		mockClient.On("Nop").Return(nil).Once()
+		err := app.Health()
+		assert.NoError(t, err)
+		mockClient.AssertExpectations(t)
+	})
+
+	t.Run("returns error when TB is unreachable", func(t *testing.T) {
+		mockClient := new(MockTigerBeetleClient)
+		app := &App{TB: mockClient}
+		mockClient.On("Nop").Return(errors.New("connection refused")).Once()
+		err := app.Health()
+		assert.Error(t, err)
+		mockClient.AssertExpectations(t)
 	})
 }
 
