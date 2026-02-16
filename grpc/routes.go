@@ -145,6 +145,10 @@ func NewApp() *App {
 	return app
 }
 
+func (s *App) Health() error {
+	return s.TB.Nop()
+}
+
 func (s *App) GetID(ctx context.Context, in *proto.GetIDRequest) (*proto.GetIDReply, error) {
 	return &proto.GetIDReply{Id: types.ID().String()}, nil
 }

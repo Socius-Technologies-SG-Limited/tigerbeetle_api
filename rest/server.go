@@ -61,6 +61,13 @@ func Router() (*gin.Engine, *grpc.App) {
 	}
 	r.GET("/id", grpcHandle(s.GetID))
 	r.GET("/ping", ping)
+	r.GET("/health", func(c *gin.Context) {
+		if err := s.Health(); err != nil {
+			c.JSON(http.StatusServiceUnavailable, gin.H{"status": "error", "error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	})
 	r.POST("/accounts/create", grpcHandle(s.CreateAccounts))
 	r.POST("/transfers/create", grpcHandle(s.CreateTransfers))
 	r.POST("/accounts/lookup", grpcHandle(s.LookupAccounts))

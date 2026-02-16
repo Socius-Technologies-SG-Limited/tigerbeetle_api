@@ -80,6 +80,14 @@ func (s *MyTestSuite) TearDownSuite() {
 
 }
 
+func (s *MyTestSuite) TestHealth() {
+	_, resultFunc := MockGinContext(s.router, http.MethodGet, "/health", nil)
+	result := resultFunc()
+	s.Equal(http.StatusOK, result.Response.StatusCode)
+	json := result.BodyJSON()
+	s.Equal("ok", json["status"])
+}
+
 func (s *MyTestSuite) TestGetID() {
 	id, err := s.RunGetID()
 	s.Nil(err, "body: %s, err: %v", id, err)
