@@ -72,6 +72,15 @@ func AccountFilterFromProtoToTigerbeetle(pAccountFilter *proto.AccountFilter) (*
 		return nil, err
 	}
 
+	var userData128 types.Uint128
+	if pAccountFilter.UserData128 != nil && *pAccountFilter.UserData128 != "" {
+		userData128, err = types.HexStringToUint128(*pAccountFilter.UserData128)
+		if err != nil {
+			slog.Error("invalid UserData128 hex string", "hex", *pAccountFilter.UserData128, "error", err)
+			return nil, err
+		}
+	}
+
 	var tbFlags types.AccountFilterFlags
 	if pAccountFilter.Flags != nil {
 		tbFlags = types.AccountFilterFlags{
@@ -83,6 +92,10 @@ func AccountFilterFromProtoToTigerbeetle(pAccountFilter *proto.AccountFilter) (*
 
 	return &types.AccountFilter{
 		AccountID:    *accountID,
+		UserData128:  userData128,
+		UserData64:   lo.FromPtrOr(pAccountFilter.UserData64, 0),
+		UserData32:   lo.FromPtrOr(pAccountFilter.UserData32, 0),
+		Code:         uint16(lo.FromPtrOr(pAccountFilter.Code, 0)),
 		TimestampMin: uint64(lo.FromPtrOr(pAccountFilter.TimestampMin, 0)),
 		TimestampMax: uint64(lo.FromPtrOr(pAccountFilter.TimestampMax, 0)),
 		Limit:        uint32(pAccountFilter.Limit),

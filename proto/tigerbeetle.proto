@@ -141,6 +141,10 @@ message AccountFilter {
   optional uint64 timestamp_max = 3;
   uint32 limit = 4;
   optional AccountFilterFlags flags = 5;
+  optional string user_data128 = 6;
+  optional uint64 user_data64 = 7;
+  optional uint32 user_data32 = 8;
+  optional uint32 code = 9;
 }
 
 message AccountFilterFlags {
