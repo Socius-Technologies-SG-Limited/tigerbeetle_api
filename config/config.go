@@ -18,7 +18,7 @@ type config struct {
 	OnlyIpv4 bool
 	Mode     string
 
-	TbClusterID uint64
+	TbClusterID string
 	TbAddresses []string
 
 	UseGrpc          bool
@@ -58,7 +58,7 @@ func NewConfig() (ok bool) {
 	}
 	tbAddresses := strings.Split(tbAddressesArr, ",")
 
-	tbClusterId, _ := strconv.ParseUint(os.Getenv("TB_CLUSTER_ID"), 10, 64)
+	tbClusterId := os.Getenv("TB_CLUSTER_ID")
 
 	isBuffered := os.Getenv("IS_BUFFERED") == "true"
 	bufferSize := 0

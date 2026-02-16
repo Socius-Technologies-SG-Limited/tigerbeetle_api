@@ -19,6 +19,20 @@ func TestConfig(t *testing.T) {
 		assert.True(t, NewConfig())
 	})
 
+	t.Run("Large TB_CLUSTER_ID stored as string", func(t *testing.T) {
+		os.Setenv("TB_ADDRESSES", "127.0.0.1:3033")
+		os.Setenv("TB_CLUSTER_ID", "2140047233530842098443828043197782446")
+		assert.True(t, NewConfig())
+		assert.Equal(t, "2140047233530842098443828043197782446", Config.TbClusterID)
+	})
+
+	t.Run("Zero TB_CLUSTER_ID", func(t *testing.T) {
+		os.Setenv("TB_ADDRESSES", "127.0.0.1:3033")
+		os.Setenv("TB_CLUSTER_ID", "0")
+		assert.True(t, NewConfig())
+		assert.Equal(t, "0", Config.TbClusterID)
+	})
+
 	t.Run("Buffered cluster", func(t *testing.T) {
 		os.Setenv("TB_ADDRESSES", "127.0.0.1:3033")
 		os.Setenv("IS_BUFFERED", "true")

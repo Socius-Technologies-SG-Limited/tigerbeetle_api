@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"math/big"
 	"math/rand/v2"
 	"os"
 	"strings"
@@ -59,8 +60,21 @@ func (a *App) Close() {
 
 const TB_MAX_BATCH_SIZE = 8190
 
+func ParseClusterID(s string) (types.Uint128, error) {
+	var id big.Int
+	if _, ok := id.SetString(s, 10); !ok {
+		return types.Uint128{}, errors.New("invalid cluster ID: " + s)
+	}
+	return types.BigIntToUint128(id), nil
+}
+
 func NewApp() *App {
-	tb, err := tigerbeetle_go.NewClient(types.Uint128{uint8(config.Config.TbClusterID)}, config.Config.TbAddresses)
+	clusterID, err := ParseClusterID(config.Config.TbClusterID)
+	if err != nil {
+		slog.Error("invalid TB_CLUSTER_ID", "value", config.Config.TbClusterID, "err", err)
+		os.Exit(1)
+	}
+	tb, err := tigerbeetle_go.NewClient(clusterID, config.Config.TbAddresses)
 	if err != nil {
 		slog.Error("unable to connect to tigerbeetle", "err", err)
 		os.Exit(1)
