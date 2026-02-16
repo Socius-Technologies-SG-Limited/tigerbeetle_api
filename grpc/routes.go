@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"math/big"
 	"math/rand/v2"
 	"os"
 	"strings"
@@ -60,7 +61,12 @@ func (a *App) Close() {
 const TB_MAX_BATCH_SIZE = 8190
 
 func NewApp() *App {
-	tb, err := tigerbeetle_go.NewClient(types.Uint128{uint8(config.Config.TbClusterID)}, config.Config.TbAddresses)
+	var clusterID big.Int
+	if _, ok := clusterID.SetString(config.Config.TbClusterID, 10); !ok {
+		slog.Error("invalid TB_CLUSTER_ID", "value", config.Config.TbClusterID)
+		os.Exit(1)
+	}
+	tb, err := tigerbeetle_go.NewClient(types.BigIntToUint128(clusterID), config.Config.TbAddresses)
 	if err != nil {
 		slog.Error("unable to connect to tigerbeetle", "err", err)
 		os.Exit(1)
