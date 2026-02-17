@@ -77,9 +77,9 @@ message Account {
   int64	debits_posted = 3;
   int64	credits_pending = 4;
   int64	credits_posted = 5;
-  string user_data128 = 6;
-  int64	user_data64 = 7;
-  int32	user_data32 = 8;
+  string user_data_128 = 6;
+  int64	user_data_64 = 7;
+  int32	user_data_32 = 8;
   int64 ledger = 9;
   int32	code = 10;
   AccountFlags flags = 11;
@@ -99,9 +99,9 @@ message Transfer {
   string credit_account_id = 3;
   int64 amount = 4;
   optional string pending_id = 5;
-  string user_data128 = 6;
-  int64	user_data64 = 7;
-  int32	user_data32 = 8;
+  string user_data_128 = 6;
+  int64	user_data_64 = 7;
+  int32	user_data_32 = 8;
   int64 ledger = 9;
   int32 code = 10;
   TransferFlags transfer_flags = 11;

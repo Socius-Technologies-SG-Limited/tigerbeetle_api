@@ -123,7 +123,7 @@ export interface AccountBalance {
 }
 
 interface UserData {
-  user_data128?: string;
-  user_data64?: int64;
-  user_data32?: int32;
+  user_data_128?: string;
+  user_data_64?: int64;
+  user_data_32?: int32;
 }

@@ -1,8 +1,8 @@
 {
   "filter": {
-    "user_data128": "1000",
-    "user_data64": "100",
-    "user_data32": "10",
+    "user_data_128": "1000",
+    "user_data_64": "100",
+    "user_data_32": "10",
     "code": "5",
     "ledger": "1",
     "timestamp_min": "0",

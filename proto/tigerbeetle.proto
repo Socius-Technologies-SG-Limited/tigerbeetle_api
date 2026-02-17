@@ -92,9 +92,9 @@ message Account {
   uint64 debits_posted = 3;
   uint64 credits_pending = 4;
   uint64 credits_posted = 5;
-  string user_data128 = 6;
-  uint64 user_data64 = 7;
-  uint32 user_data32 = 8;
+  string user_data_128 = 6;
+  uint64 user_data_64 = 7;
+  uint32 user_data_32 = 8;
   uint32 ledger = 9;
   uint32 code = 10;
   AccountFlags flags = 11;
@@ -115,9 +115,9 @@ message Transfer {
   string credit_account_id = 3;
   int64 amount = 4;
   optional string pending_id = 5;
-  string user_data128 = 6;
-  uint64 user_data64 = 7;
-  uint32 user_data32 = 8;
+  string user_data_128 = 6;
+  uint64 user_data_64 = 7;
+  uint32 user_data_32 = 8;
   uint32 ledger = 9;
   uint32 code = 10;
   TransferFlags transfer_flags = 11;
@@ -142,9 +142,9 @@ message AccountFilter {
   optional uint64 timestamp_max = 3;
   uint32 limit = 4;
   optional AccountFilterFlags flags = 5;
-  optional string user_data128 = 6;
-  optional uint64 user_data64 = 7;
-  optional uint32 user_data32 = 8;
+  optional string user_data_128 = 6;
+  optional uint64 user_data_64 = 7;
+  optional uint32 user_data_32 = 8;
   optional uint32 code = 9;
 }
 
@@ -163,9 +163,9 @@ message AccountBalance {
 }
 
 message QueryFilter {
-  optional string user_data128 = 1;
-  optional uint64 user_data64 = 2;
-  optional uint32 user_data32 = 3;
+  optional string user_data_128 = 1;
+  optional uint64 user_data_64 = 2;
+  optional uint32 user_data_32 = 3;
   optional uint32 code = 4;
   optional uint32 ledger = 5;
   optional uint64 timestamp_min = 6;

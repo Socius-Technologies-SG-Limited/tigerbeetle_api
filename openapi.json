@@ -484,16 +484,16 @@
             "format": "uint64",
             "description": "Posted credit amount"
           },
-          "user_data128": {
+          "user_data_128": {
             "type": "string",
             "description": "User-defined data (128-bit)"
           },
-          "user_data64": {
+          "user_data_64": {
             "type": "integer",
             "format": "uint64",
             "description": "User-defined data (64-bit)"
           },
-          "user_data32": {
+          "user_data_32": {
             "type": "integer",
             "format": "uint32",
             "description": "User-defined data (32-bit)"
@@ -571,11 +571,11 @@
             "type": "string",
             "description": "Pending transfer ID"
           },
-          "user_data128": {
+          "user_data_128": {
             "type": "string",
             "description": "User-defined data (128-bit)"
           },
-          "user_data64": {
+          "user_data_64": {
             "oneOf": [
               {
                 "type": "string",
@@ -588,7 +588,7 @@
             ],
             "description": "User-defined data (64-bit)"
           },
-          "user_data32": {
+          "user_data_32": {
             "type": "integer",
             "format": "uint32",
             "description": "User-defined data (32-bit)"
@@ -738,16 +738,16 @@
           "limit"
         ],
         "properties": {
-          "user_data128": {
+          "user_data_128": {
             "type": "string",
             "description": "Filter by user data (128-bit)"
           },
-          "user_data64": {
+          "user_data_64": {
             "type": "integer",
             "format": "uint64",
             "description": "Filter by user data (64-bit)"
           },
-          "user_data32": {
+          "user_data_32": {
             "type": "integer",
             "format": "uint32",
             "description": "Filter by user data (32-bit)"

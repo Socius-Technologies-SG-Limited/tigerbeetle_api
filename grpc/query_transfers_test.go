@@ -106,11 +106,11 @@ func TestQueryTransfers(t *testing.T) {
 
 	t.Run("should return empty array when no transfers match", func(t *testing.T) {
 		filter := &proto.QueryFilter{
-			UserData128: lo.ToPtr("0"),
-			UserData64:  lo.ToPtr(uint64(0)),
-			UserData32:  lo.ToPtr(uint32(0)),
-			Code:        lo.ToPtr(uint32(1)),
-			Limit:       10,
+			UserData_128: lo.ToPtr("0"),
+			UserData_64:  lo.ToPtr(uint64(0)),
+			UserData_32:  lo.ToPtr(uint32(0)),
+			Code:         lo.ToPtr(uint32(1)),
+			Limit:        10,
 		}
 
 		req := &proto.QueryTransfersRequest{
@@ -129,12 +129,12 @@ func TestQueryTransfers(t *testing.T) {
 
 	t.Run("should return transfers with valid filter", func(t *testing.T) {
 		filter := &proto.QueryFilter{
-			UserData128: lo.ToPtr("1"),
-			UserData64:  lo.ToPtr(uint64(100)),
-			UserData32:  lo.ToPtr(uint32(10)),
-			Code:        lo.ToPtr(uint32(1)),
-			Ledger:      lo.ToPtr(uint32(0)),
-			Limit:       10,
+			UserData_128: lo.ToPtr("1"),
+			UserData_64:  lo.ToPtr(uint64(100)),
+			UserData_32:  lo.ToPtr(uint32(10)),
+			Code:         lo.ToPtr(uint32(1)),
+			Ledger:       lo.ToPtr(uint32(0)),
+			Limit:        10,
 		}
 
 		req := &proto.QueryTransfersRequest{
@@ -165,15 +165,15 @@ func TestQueryTransfers(t *testing.T) {
 		assert.NotNil(t, resp)
 		assert.Len(t, resp.Transfers, 1)
 		assert.Equal(t, "1", resp.Transfers[0].Id)
-		assert.Equal(t, uint64(100), resp.Transfers[0].UserData64)
-		assert.Equal(t, uint32(10), resp.Transfers[0].UserData32)
+		assert.Equal(t, uint64(100), resp.Transfers[0].UserData_64)
+		assert.Equal(t, uint32(10), resp.Transfers[0].UserData_32)
 		mockClient.AssertExpectations(t)
 	})
 
 	t.Run("should respect limit parameter", func(t *testing.T) {
 		filter := &proto.QueryFilter{
-			UserData64: lo.ToPtr(uint64(100)),
-			Limit:      2,
+			UserData_64: lo.ToPtr(uint64(100)),
+			Limit:       2,
 		}
 
 		req := &proto.QueryTransfersRequest{
@@ -197,8 +197,8 @@ func TestQueryTransfers(t *testing.T) {
 
 	t.Run("should handle reversed flag correctly", func(t *testing.T) {
 		filter := &proto.QueryFilter{
-			UserData64: lo.ToPtr(uint64(100)),
-			Limit:      10,
+			UserData_64: lo.ToPtr(uint64(100)),
+			Limit:       10,
 			Flags: &proto.QueryFilterFlags{
 				Reversed: lo.ToPtr(true),
 			},
@@ -230,7 +230,7 @@ func TestQueryTransfers(t *testing.T) {
 
 	t.Run("should handle timestamp range filters", func(t *testing.T) {
 		filter := &proto.QueryFilter{
-			UserData64:   lo.ToPtr(uint64(100)),
+			UserData_64:  lo.ToPtr(uint64(100)),
 			TimestampMin: lo.ToPtr(uint64(1000)),
 			TimestampMax: lo.ToPtr(uint64(5000)),
 			Limit:        10,
@@ -258,12 +258,12 @@ func TestQueryTransfers(t *testing.T) {
 
 	t.Run("should handle multiple filter criteria", func(t *testing.T) {
 		filter := &proto.QueryFilter{
-			UserData128: lo.ToPtr("1000"),
-			UserData64:  lo.ToPtr(uint64(100)),
-			UserData32:  lo.ToPtr(uint32(10)),
-			Code:        lo.ToPtr(uint32(5)),
-			Ledger:      lo.ToPtr(uint32(1)),
-			Limit:       10,
+			UserData_128: lo.ToPtr("1000"),
+			UserData_64:  lo.ToPtr(uint64(100)),
+			UserData_32:  lo.ToPtr(uint32(10)),
+			Code:         lo.ToPtr(uint32(5)),
+			Ledger:       lo.ToPtr(uint32(1)),
+			Limit:        10,
 		}
 
 		req := &proto.QueryTransfersRequest{
@@ -295,8 +295,8 @@ func TestQueryTransfers(t *testing.T) {
 
 	t.Run("should handle TigerBeetle client errors", func(t *testing.T) {
 		filter := &proto.QueryFilter{
-			UserData64: lo.ToPtr(uint64(100)),
-			Limit:      10,
+			UserData_64: lo.ToPtr(uint64(100)),
+			Limit:       10,
 		}
 
 		req := &proto.QueryTransfersRequest{
@@ -313,10 +313,10 @@ func TestQueryTransfers(t *testing.T) {
 		mockClient.AssertExpectations(t)
 	})
 
-	t.Run("should handle invalid hex string in UserData128", func(t *testing.T) {
+	t.Run("should handle invalid hex string in UserData_128", func(t *testing.T) {
 		filter := &proto.QueryFilter{
-			UserData128: lo.ToPtr("invalid-hex"),
-			Limit:       10,
+			UserData_128: lo.ToPtr("invalid-hex"),
+			Limit:        10,
 		}
 
 		req := &proto.QueryTransfersRequest{
@@ -325,7 +325,7 @@ func TestQueryTransfers(t *testing.T) {
 
 		_, err := app.QueryTransfers(context.Background(), req)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "invalid UserData128:")
+		assert.Contains(t, err.Error(), "invalid UserData_128:")
 	})
 
 	t.Run("should handle empty filter with only limit", func(t *testing.T) {

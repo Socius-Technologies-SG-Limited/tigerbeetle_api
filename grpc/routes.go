@@ -163,7 +163,7 @@ func (s *App) CreateAccounts(ctx context.Context, in *proto.CreateAccountsReques
 		if err != nil {
 			return nil, err
 		}
-		userData128, err := types.HexStringToUint128(inAccount.UserData128)
+		userData128, err := types.HexStringToUint128(inAccount.UserData_128)
 		if err != nil {
 			return nil, err
 		}
@@ -181,8 +181,8 @@ func (s *App) CreateAccounts(ctx context.Context, in *proto.CreateAccountsReques
 			CreditsPending: types.ToUint128(uint64(inAccount.CreditsPending)),
 			CreditsPosted:  types.ToUint128(uint64(inAccount.CreditsPosted)),
 			UserData128:    userData128,
-			UserData64:     uint64(inAccount.UserData64),
-			UserData32:     uint32(inAccount.UserData32),
+			UserData64:     uint64(inAccount.UserData_64),
+			UserData32:     uint32(inAccount.UserData_32),
 			Ledger:         uint32(inAccount.Ledger),
 			Code:           uint16(inAccount.Code),
 			Flags:          flags.ToUint16(),
@@ -242,7 +242,7 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 		if err != nil {
 			return nil, err
 		}
-		userData128, err := types.HexStringToUint128(inTransfer.UserData128)
+		userData128, err := types.HexStringToUint128(inTransfer.UserData_128)
 		if err != nil {
 			return nil, err
 		}
@@ -253,8 +253,8 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 			Amount:          types.ToUint128(uint64(inTransfer.Amount)),
 			PendingID:       *pendingID,
 			UserData128:     userData128,
-			UserData64:      uint64(inTransfer.UserData64),
-			UserData32:      uint32(inTransfer.UserData32),
+			UserData64:      uint64(inTransfer.UserData_64),
+			UserData32:      uint32(inTransfer.UserData_32),
 			Timeout:         0,
 			Ledger:          uint32(inTransfer.Ledger),
 			Code:            uint16(inTransfer.Code),
@@ -393,8 +393,8 @@ func (s *App) QueryTransfers(ctx context.Context, in *proto.QueryTransfersReques
 
 	tbFilter, err := QueryFilterFromProtoToTigerbeetle(in.Filter)
 	if err != nil {
-		if in.Filter.UserData128 != nil && strings.Contains(err.Error(), "hex") {
-			return nil, errors.New("invalid UserData128: " + err.Error())
+		if in.Filter.UserData_128 != nil && strings.Contains(err.Error(), "hex") {
+			return nil, errors.New("invalid UserData_128: " + err.Error())
 		}
 		return nil, err
 	}
@@ -418,8 +418,8 @@ func (s *App) QueryAccounts(ctx context.Context, in *proto.QueryAccountsRequest)
 
 	tbFilter, err := QueryFilterFromProtoToTigerbeetle(in.Filter)
 	if err != nil {
-		if in.Filter.UserData128 != nil && strings.Contains(err.Error(), "hex") {
-			return nil, errors.New("invalid UserData128: " + err.Error())
+		if in.Filter.UserData_128 != nil && strings.Contains(err.Error(), "hex") {
+			return nil, errors.New("invalid UserData_128: " + err.Error())
 		}
 		return nil, err
 	}

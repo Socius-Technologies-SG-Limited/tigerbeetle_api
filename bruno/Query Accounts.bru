@@ -13,9 +13,9 @@ post {
 body:json {
   {
     "filter": {
-  //     "user_data128": "1000",
-  //     "user_data64": 100,
-  //     "user_data32": 10,
+  //     "user_data_128": "1000",
+  //     "user_data_64": 100,
+  //     "user_data_32": 10,
   //     "code": 5,
       "ledger": 1,
       "timestamp_min": 0,
@@ -35,9 +35,9 @@ docs {
   
   ### Filter Fields:
   
-  - **user_data128** (optional): Hex string representation of a 128-bit value
-  - **user_data64** (optional): 64-bit unsigned integer
-  - **user_data32** (optional): 32-bit unsigned integer  
+  - **user_data_128** (optional): Hex string representation of a 128-bit value
+  - **user_data_64** (optional): 64-bit unsigned integer
+  - **user_data_32** (optional): 32-bit unsigned integer  
   - **code** (optional): Account code
   - **ledger** (optional): Ledger number
   - **timestamp_min** (optional): Minimum timestamp (nanoseconds)
@@ -52,7 +52,7 @@ docs {
   ```json
   {
     "filter": {
-      "user_data128": "1000",
+      "user_data_128": "1000",
       "limit": 10
     }
   }
@@ -62,7 +62,7 @@ docs {
   ```json
   {
     "filter": {
-      "user_data64": "100",
+      "user_data_64": "100",
       "code": "5",
       "ledger": "1",
       "limit": 20
@@ -74,7 +74,7 @@ docs {
   ```json
   {
     "filter": {
-      "user_data64": "100",
+      "user_data_64": "100",
       "timestamp_min": "1700000000000000000",
       "timestamp_max": "1700001000000000000",
       "limit": 50
@@ -86,7 +86,7 @@ docs {
   ```json
   {
     "filter": {
-      "user_data64": "100",
+      "user_data_64": "100",
       "limit": 10,
       "flags": {
         "reversed": true
@@ -108,9 +108,9 @@ docs {
         "debits_posted": "1000",
         "credits_pending": "0",
         "credits_posted": "500",
-        "user_data128": "1000",
-        "user_data64": "100",
-        "user_data32": "10",
+        "user_data_128": "1000",
+        "user_data_64": "100",
+        "user_data_32": "10",
         "ledger": "1",
         "code": "5",
         "flags": {

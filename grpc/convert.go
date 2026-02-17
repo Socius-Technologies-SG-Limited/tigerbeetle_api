@@ -23,9 +23,9 @@ func AccountToProtoAccount(tbAccount types.Account) *proto.Account {
 		DebitsPosted:   lo.ToPtr(tbAccount.DebitsPosted.BigInt()).Uint64(),
 		CreditsPending: lo.ToPtr(tbAccount.CreditsPending.BigInt()).Uint64(),
 		CreditsPosted:  lo.ToPtr(tbAccount.CreditsPosted.BigInt()).Uint64(),
-		UserData128:    tbAccount.UserData128.String(),
-		UserData64:     tbAccount.UserData64,
-		UserData32:     tbAccount.UserData32,
+		UserData_128:   tbAccount.UserData128.String(),
+		UserData_64:    tbAccount.UserData64,
+		UserData_32:    tbAccount.UserData32,
 		Ledger:         tbAccount.Ledger,
 		Code:           uint32(tbAccount.Code),
 		Flags:          &pFlags,
@@ -57,9 +57,9 @@ func TransferToProtoTransfer(tbTransfer types.Transfer) *proto.Transfer {
 		CreditAccountId: tbTransfer.CreditAccountID.String(),
 		Amount:          lo.ToPtr(tbTransfer.Amount.BigInt()).Int64(),
 		PendingId:       lo.If[*string](pendingId == "", nil).Else(&pendingId),
-		UserData128:     tbTransfer.UserData128.String(),
-		UserData64:      tbTransfer.UserData64,
-		UserData32:      tbTransfer.UserData32,
+		UserData_128:    tbTransfer.UserData128.String(),
+		UserData_64:     tbTransfer.UserData64,
+		UserData_32:     tbTransfer.UserData32,
 		Ledger:          tbTransfer.Ledger,
 		Code:            uint32(tbTransfer.Code),
 		TransferFlags:   pFlags,
@@ -74,10 +74,10 @@ func AccountFilterFromProtoToTigerbeetle(pAccountFilter *proto.AccountFilter) (*
 	}
 
 	var userData128 types.Uint128
-	if pAccountFilter.UserData128 != nil && *pAccountFilter.UserData128 != "" {
-		userData128, err = types.HexStringToUint128(*pAccountFilter.UserData128)
+	if pAccountFilter.UserData_128 != nil && *pAccountFilter.UserData_128 != "" {
+		userData128, err = types.HexStringToUint128(*pAccountFilter.UserData_128)
 		if err != nil {
-			slog.Error("invalid UserData128 hex string", "hex", *pAccountFilter.UserData128, "error", err)
+			slog.Error("invalid UserData128 hex string", "hex", *pAccountFilter.UserData_128, "error", err)
 			return nil, err
 		}
 	}
@@ -94,8 +94,8 @@ func AccountFilterFromProtoToTigerbeetle(pAccountFilter *proto.AccountFilter) (*
 	return &types.AccountFilter{
 		AccountID:    *accountID,
 		UserData128:  userData128,
-		UserData64:   lo.FromPtrOr(pAccountFilter.UserData64, 0),
-		UserData32:   lo.FromPtrOr(pAccountFilter.UserData32, 0),
+		UserData64:   lo.FromPtrOr(pAccountFilter.UserData_64, 0),
+		UserData32:   lo.FromPtrOr(pAccountFilter.UserData_32, 0),
 		Code:         uint16(lo.FromPtrOr(pAccountFilter.Code, 0)),
 		TimestampMin: uint64(lo.FromPtrOr(pAccountFilter.TimestampMin, 0)),
 		TimestampMax: uint64(lo.FromPtrOr(pAccountFilter.TimestampMax, 0)),
@@ -146,11 +146,11 @@ func QueryFilterFromProtoToTigerbeetle(pFilter *proto.QueryFilter) (*types.Query
 	}
 
 	var userData128 types.Uint128
-	if pFilter.UserData128 != nil && *pFilter.UserData128 != "" {
+	if pFilter.UserData_128 != nil && *pFilter.UserData_128 != "" {
 		var err error
-		userData128, err = types.HexStringToUint128(*pFilter.UserData128)
+		userData128, err = types.HexStringToUint128(*pFilter.UserData_128)
 		if err != nil {
-			slog.Error("invalid UserData128 hex string", "hex", *pFilter.UserData128, "error", err)
+			slog.Error("invalid UserData128 hex string", "hex", *pFilter.UserData_128, "error", err)
 			return nil, err
 		}
 	}
@@ -164,8 +164,8 @@ func QueryFilterFromProtoToTigerbeetle(pFilter *proto.QueryFilter) (*types.Query
 
 	return &types.QueryFilter{
 		UserData128:  userData128,
-		UserData64:   lo.FromPtrOr(pFilter.UserData64, 0),
-		UserData32:   lo.FromPtrOr(pFilter.UserData32, 0),
+		UserData64:   lo.FromPtrOr(pFilter.UserData_64, 0),
+		UserData32:   lo.FromPtrOr(pFilter.UserData_32, 0),
 		Code:         uint16(lo.FromPtrOr(pFilter.Code, 0)),
 		Ledger:       lo.FromPtrOr(pFilter.Ledger, 0),
 		TimestampMin: lo.FromPtrOr(pFilter.TimestampMin, 0),

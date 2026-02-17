@@ -246,8 +246,8 @@ func (s *MyTestSuite) TestCalls() {
 		// Test query with empty results
 		_, resultFunc := MockGinContext(s.router, http.MethodPost, "/transfers/query", &gin.H{
 			"filter": gin.H{
-				"user_data64": 9999,
-				"limit":       10,
+				"user_data_64": 9999,
+				"limit":        10,
 			},
 		})
 		result := resultFunc()
@@ -285,8 +285,8 @@ func (s *MyTestSuite) TestCalls() {
 		// Test query with empty results
 		_, resultFunc := MockGinContext(s.router, http.MethodPost, "/accounts/query", &gin.H{
 			"filter": gin.H{
-				"user_data64": 9999,
-				"limit":       10,
+				"user_data_64": 9999,
+				"limit":        10,
 			},
 		})
 		result := resultFunc()

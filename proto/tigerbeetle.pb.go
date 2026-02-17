@@ -1294,9 +1294,9 @@ type Account struct {
 	DebitsPosted   uint64                 `protobuf:"varint,3,opt,name=debits_posted,json=debitsPosted,proto3" json:"debits_posted,omitempty"`
 	CreditsPending uint64                 `protobuf:"varint,4,opt,name=credits_pending,json=creditsPending,proto3" json:"credits_pending,omitempty"`
 	CreditsPosted  uint64                 `protobuf:"varint,5,opt,name=credits_posted,json=creditsPosted,proto3" json:"credits_posted,omitempty"`
-	UserData128    string                 `protobuf:"bytes,6,opt,name=user_data128,json=userData128,proto3" json:"user_data128,omitempty"`
-	UserData64     uint64                 `protobuf:"varint,7,opt,name=user_data64,json=userData64,proto3" json:"user_data64,omitempty"`
-	UserData32     uint32                 `protobuf:"varint,8,opt,name=user_data32,json=userData32,proto3" json:"user_data32,omitempty"`
+	UserData_128   string                 `protobuf:"bytes,6,opt,name=user_data_128,json=userData128,proto3" json:"user_data_128,omitempty"`
+	UserData_64    uint64                 `protobuf:"varint,7,opt,name=user_data_64,json=userData64,proto3" json:"user_data_64,omitempty"`
+	UserData_32    uint32                 `protobuf:"varint,8,opt,name=user_data_32,json=userData32,proto3" json:"user_data_32,omitempty"`
 	Ledger         uint32                 `protobuf:"varint,9,opt,name=ledger,proto3" json:"ledger,omitempty"`
 	Code           uint32                 `protobuf:"varint,10,opt,name=code,proto3" json:"code,omitempty"`
 	Flags          *AccountFlags          `protobuf:"bytes,11,opt,name=flags,proto3" json:"flags,omitempty"`
@@ -1370,23 +1370,23 @@ func (x *Account) GetCreditsPosted() uint64 {
 	return 0
 }
 
-func (x *Account) GetUserData128() string {
+func (x *Account) GetUserData_128() string {
 	if x != nil {
-		return x.UserData128
+		return x.UserData_128
 	}
 	return ""
 }
 
-func (x *Account) GetUserData64() uint64 {
+func (x *Account) GetUserData_64() uint64 {
 	if x != nil {
-		return x.UserData64
+		return x.UserData_64
 	}
 	return 0
 }
 
-func (x *Account) GetUserData32() uint32 {
+func (x *Account) GetUserData_32() uint32 {
 	if x != nil {
-		return x.UserData32
+		return x.UserData_32
 	}
 	return 0
 }
@@ -1502,9 +1502,9 @@ type Transfer struct {
 	CreditAccountId string                 `protobuf:"bytes,3,opt,name=credit_account_id,json=creditAccountId,proto3" json:"credit_account_id,omitempty"`
 	Amount          int64                  `protobuf:"varint,4,opt,name=amount,proto3" json:"amount,omitempty"`
 	PendingId       *string                `protobuf:"bytes,5,opt,name=pending_id,json=pendingId,proto3,oneof" json:"pending_id,omitempty"`
-	UserData128     string                 `protobuf:"bytes,6,opt,name=user_data128,json=userData128,proto3" json:"user_data128,omitempty"`
-	UserData64      uint64                 `protobuf:"varint,7,opt,name=user_data64,json=userData64,proto3" json:"user_data64,omitempty"`
-	UserData32      uint32                 `protobuf:"varint,8,opt,name=user_data32,json=userData32,proto3" json:"user_data32,omitempty"`
+	UserData_128    string                 `protobuf:"bytes,6,opt,name=user_data_128,json=userData128,proto3" json:"user_data_128,omitempty"`
+	UserData_64     uint64                 `protobuf:"varint,7,opt,name=user_data_64,json=userData64,proto3" json:"user_data_64,omitempty"`
+	UserData_32     uint32                 `protobuf:"varint,8,opt,name=user_data_32,json=userData32,proto3" json:"user_data_32,omitempty"`
 	Ledger          uint32                 `protobuf:"varint,9,opt,name=ledger,proto3" json:"ledger,omitempty"`
 	Code            uint32                 `protobuf:"varint,10,opt,name=code,proto3" json:"code,omitempty"`
 	TransferFlags   *TransferFlags         `protobuf:"bytes,11,opt,name=transfer_flags,json=transferFlags,proto3" json:"transfer_flags,omitempty"`
@@ -1578,23 +1578,23 @@ func (x *Transfer) GetPendingId() string {
 	return ""
 }
 
-func (x *Transfer) GetUserData128() string {
+func (x *Transfer) GetUserData_128() string {
 	if x != nil {
-		return x.UserData128
+		return x.UserData_128
 	}
 	return ""
 }
 
-func (x *Transfer) GetUserData64() uint64 {
+func (x *Transfer) GetUserData_64() uint64 {
 	if x != nil {
-		return x.UserData64
+		return x.UserData_64
 	}
 	return 0
 }
 
-func (x *Transfer) GetUserData32() uint32 {
+func (x *Transfer) GetUserData_32() uint32 {
 	if x != nil {
-		return x.UserData32
+		return x.UserData_32
 	}
 	return 0
 }
@@ -1742,9 +1742,9 @@ type AccountFilter struct {
 	TimestampMax  *uint64                `protobuf:"varint,3,opt,name=timestamp_max,json=timestampMax,proto3,oneof" json:"timestamp_max,omitempty"`
 	Limit         uint32                 `protobuf:"varint,4,opt,name=limit,proto3" json:"limit,omitempty"`
 	Flags         *AccountFilterFlags    `protobuf:"bytes,5,opt,name=flags,proto3,oneof" json:"flags,omitempty"`
-	UserData128   *string                `protobuf:"bytes,6,opt,name=user_data128,json=userData128,proto3,oneof" json:"user_data128,omitempty"`
-	UserData64    *uint64                `protobuf:"varint,7,opt,name=user_data64,json=userData64,proto3,oneof" json:"user_data64,omitempty"`
-	UserData32    *uint32                `protobuf:"varint,8,opt,name=user_data32,json=userData32,proto3,oneof" json:"user_data32,omitempty"`
+	UserData_128  *string                `protobuf:"bytes,6,opt,name=user_data_128,json=userData128,proto3,oneof" json:"user_data_128,omitempty"`
+	UserData_64   *uint64                `protobuf:"varint,7,opt,name=user_data_64,json=userData64,proto3,oneof" json:"user_data_64,omitempty"`
+	UserData_32   *uint32                `protobuf:"varint,8,opt,name=user_data_32,json=userData32,proto3,oneof" json:"user_data_32,omitempty"`
 	Code          *uint32                `protobuf:"varint,9,opt,name=code,proto3,oneof" json:"code,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1815,23 +1815,23 @@ func (x *AccountFilter) GetFlags() *AccountFilterFlags {
 	return nil
 }
 
-func (x *AccountFilter) GetUserData128() string {
-	if x != nil && x.UserData128 != nil {
-		return *x.UserData128
+func (x *AccountFilter) GetUserData_128() string {
+	if x != nil && x.UserData_128 != nil {
+		return *x.UserData_128
 	}
 	return ""
 }
 
-func (x *AccountFilter) GetUserData64() uint64 {
-	if x != nil && x.UserData64 != nil {
-		return *x.UserData64
+func (x *AccountFilter) GetUserData_64() uint64 {
+	if x != nil && x.UserData_64 != nil {
+		return *x.UserData_64
 	}
 	return 0
 }
 
-func (x *AccountFilter) GetUserData32() uint32 {
-	if x != nil && x.UserData32 != nil {
-		return *x.UserData32
+func (x *AccountFilter) GetUserData_32() uint32 {
+	if x != nil && x.UserData_32 != nil {
+		return *x.UserData_32
 	}
 	return 0
 }
@@ -1981,9 +1981,9 @@ func (x *AccountBalance) GetTimestamp() uint64 {
 
 type QueryFilter struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserData128   *string                `protobuf:"bytes,1,opt,name=user_data128,json=userData128,proto3,oneof" json:"user_data128,omitempty"`
-	UserData64    *uint64                `protobuf:"varint,2,opt,name=user_data64,json=userData64,proto3,oneof" json:"user_data64,omitempty"`
-	UserData32    *uint32                `protobuf:"varint,3,opt,name=user_data32,json=userData32,proto3,oneof" json:"user_data32,omitempty"`
+	UserData_128  *string                `protobuf:"bytes,1,opt,name=user_data_128,json=userData128,proto3,oneof" json:"user_data_128,omitempty"`
+	UserData_64   *uint64                `protobuf:"varint,2,opt,name=user_data_64,json=userData64,proto3,oneof" json:"user_data_64,omitempty"`
+	UserData_32   *uint32                `protobuf:"varint,3,opt,name=user_data_32,json=userData32,proto3,oneof" json:"user_data_32,omitempty"`
 	Code          *uint32                `protobuf:"varint,4,opt,name=code,proto3,oneof" json:"code,omitempty"`
 	Ledger        *uint32                `protobuf:"varint,5,opt,name=ledger,proto3,oneof" json:"ledger,omitempty"`
 	TimestampMin  *uint64                `protobuf:"varint,6,opt,name=timestamp_min,json=timestampMin,proto3,oneof" json:"timestamp_min,omitempty"`
@@ -2024,23 +2024,23 @@ func (*QueryFilter) Descriptor() ([]byte, []int) {
 	return file_proto_tigerbeetle_proto_rawDescGZIP(), []int{27}
 }
 
-func (x *QueryFilter) GetUserData128() string {
-	if x != nil && x.UserData128 != nil {
-		return *x.UserData128
+func (x *QueryFilter) GetUserData_128() string {
+	if x != nil && x.UserData_128 != nil {
+		return *x.UserData_128
 	}
 	return ""
 }
 
-func (x *QueryFilter) GetUserData64() uint64 {
-	if x != nil && x.UserData64 != nil {
-		return *x.UserData64
+func (x *QueryFilter) GetUserData_64() uint64 {
+	if x != nil && x.UserData_64 != nil {
+		return *x.UserData_64
 	}
 	return 0
 }
 
-func (x *QueryFilter) GetUserData32() uint32 {
-	if x != nil && x.UserData32 != nil {
-		return *x.UserData32
+func (x *QueryFilter) GetUserData_32() uint32 {
+	if x != nil && x.UserData_32 != nil {
+		return *x.UserData_32
 	}
 	return 0
 }
@@ -2179,17 +2179,17 @@ const file_proto_tigerbeetle_proto_rawDesc = "" +
 	"\x14QueryAccountsRequest\x12*\n" +
 	"\x06filter\x18\x01 \x01(\v2\x12.proto.QueryFilterR\x06filter\"@\n" +
 	"\x12QueryAccountsReply\x12*\n" +
-	"\baccounts\x18\x01 \x03(\v2\x0e.proto.AccountR\baccounts\"\x8f\x03\n" +
+	"\baccounts\x18\x01 \x03(\v2\x0e.proto.AccountR\baccounts\"\x92\x03\n" +
 	"\aAccount\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12%\n" +
 	"\x0edebits_pending\x18\x02 \x01(\x04R\rdebitsPending\x12#\n" +
 	"\rdebits_posted\x18\x03 \x01(\x04R\fdebitsPosted\x12'\n" +
 	"\x0fcredits_pending\x18\x04 \x01(\x04R\x0ecreditsPending\x12%\n" +
-	"\x0ecredits_posted\x18\x05 \x01(\x04R\rcreditsPosted\x12!\n" +
-	"\fuser_data128\x18\x06 \x01(\tR\vuserData128\x12\x1f\n" +
-	"\vuser_data64\x18\a \x01(\x04R\n" +
-	"userData64\x12\x1f\n" +
-	"\vuser_data32\x18\b \x01(\rR\n" +
+	"\x0ecredits_posted\x18\x05 \x01(\x04R\rcreditsPosted\x12\"\n" +
+	"\ruser_data_128\x18\x06 \x01(\tR\vuserData128\x12 \n" +
+	"\fuser_data_64\x18\a \x01(\x04R\n" +
+	"userData64\x12 \n" +
+	"\fuser_data_32\x18\b \x01(\rR\n" +
 	"userData32\x12\x16\n" +
 	"\x06ledger\x18\t \x01(\rR\x06ledger\x12\x12\n" +
 	"\x04code\x18\n" +
@@ -2207,18 +2207,18 @@ const file_proto_tigerbeetle_proto_rawDesc = "" +
 	"\x1f_credits_must_not_exceed_debitsB\n" +
 	"\n" +
 	"\b_historyB\t\n" +
-	"\a_closed\"\xba\x03\n" +
+	"\a_closed\"\xbd\x03\n" +
 	"\bTransfer\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12(\n" +
 	"\x10debit_account_id\x18\x02 \x01(\tR\x0edebitAccountId\x12*\n" +
 	"\x11credit_account_id\x18\x03 \x01(\tR\x0fcreditAccountId\x12\x16\n" +
 	"\x06amount\x18\x04 \x01(\x03R\x06amount\x12\"\n" +
 	"\n" +
-	"pending_id\x18\x05 \x01(\tH\x00R\tpendingId\x88\x01\x01\x12!\n" +
-	"\fuser_data128\x18\x06 \x01(\tR\vuserData128\x12\x1f\n" +
-	"\vuser_data64\x18\a \x01(\x04R\n" +
-	"userData64\x12\x1f\n" +
-	"\vuser_data32\x18\b \x01(\rR\n" +
+	"pending_id\x18\x05 \x01(\tH\x00R\tpendingId\x88\x01\x01\x12\"\n" +
+	"\ruser_data_128\x18\x06 \x01(\tR\vuserData128\x12 \n" +
+	"\fuser_data_64\x18\a \x01(\x04R\n" +
+	"userData64\x12 \n" +
+	"\fuser_data_32\x18\b \x01(\rR\n" +
 	"userData32\x12\x16\n" +
 	"\x06ledger\x18\t \x01(\rR\x06ledger\x12\x12\n" +
 	"\x04code\x18\n" +
@@ -2247,26 +2247,26 @@ const file_proto_tigerbeetle_proto_rawDesc = "" +
 	"\x11_balancing_creditB\x10\n" +
 	"\x0e_closing_debitB\x11\n" +
 	"\x0f_closing_creditB\v\n" +
-	"\t_imported\"\xc3\x03\n" +
+	"\t_imported\"\xc9\x03\n" +
 	"\rAccountFilter\x12\x1d\n" +
 	"\n" +
 	"account_id\x18\x01 \x01(\tR\taccountId\x12(\n" +
 	"\rtimestamp_min\x18\x02 \x01(\x04H\x00R\ftimestampMin\x88\x01\x01\x12(\n" +
 	"\rtimestamp_max\x18\x03 \x01(\x04H\x01R\ftimestampMax\x88\x01\x01\x12\x14\n" +
 	"\x05limit\x18\x04 \x01(\rR\x05limit\x124\n" +
-	"\x05flags\x18\x05 \x01(\v2\x19.proto.AccountFilterFlagsH\x02R\x05flags\x88\x01\x01\x12&\n" +
-	"\fuser_data128\x18\x06 \x01(\tH\x03R\vuserData128\x88\x01\x01\x12$\n" +
-	"\vuser_data64\x18\a \x01(\x04H\x04R\n" +
-	"userData64\x88\x01\x01\x12$\n" +
-	"\vuser_data32\x18\b \x01(\rH\x05R\n" +
+	"\x05flags\x18\x05 \x01(\v2\x19.proto.AccountFilterFlagsH\x02R\x05flags\x88\x01\x01\x12'\n" +
+	"\ruser_data_128\x18\x06 \x01(\tH\x03R\vuserData128\x88\x01\x01\x12%\n" +
+	"\fuser_data_64\x18\a \x01(\x04H\x04R\n" +
+	"userData64\x88\x01\x01\x12%\n" +
+	"\fuser_data_32\x18\b \x01(\rH\x05R\n" +
 	"userData32\x88\x01\x01\x12\x17\n" +
 	"\x04code\x18\t \x01(\rH\x06R\x04code\x88\x01\x01B\x10\n" +
 	"\x0e_timestamp_minB\x10\n" +
 	"\x0e_timestamp_maxB\b\n" +
-	"\x06_flagsB\x0f\n" +
-	"\r_user_data128B\x0e\n" +
-	"\f_user_data64B\x0e\n" +
-	"\f_user_data32B\a\n" +
+	"\x06_flagsB\x10\n" +
+	"\x0e_user_data_128B\x0f\n" +
+	"\r_user_data_64B\x0f\n" +
+	"\r_user_data_32B\a\n" +
 	"\x05_code\"\x95\x01\n" +
 	"\x12AccountFilterFlags\x12\x1b\n" +
 	"\x06debits\x18\x01 \x01(\bH\x00R\x06debits\x88\x01\x01\x12\x1d\n" +
@@ -2281,22 +2281,22 @@ const file_proto_tigerbeetle_proto_rawDesc = "" +
 	"\rdebits_posted\x18\x02 \x01(\x04R\fdebitsPosted\x12'\n" +
 	"\x0fcredits_pending\x18\x03 \x01(\x04R\x0ecreditsPending\x12%\n" +
 	"\x0ecredits_posted\x18\x04 \x01(\x04R\rcreditsPosted\x12\x1c\n" +
-	"\ttimestamp\x18\x05 \x01(\x04R\ttimestamp\"\xc8\x03\n" +
-	"\vQueryFilter\x12&\n" +
-	"\fuser_data128\x18\x01 \x01(\tH\x00R\vuserData128\x88\x01\x01\x12$\n" +
-	"\vuser_data64\x18\x02 \x01(\x04H\x01R\n" +
-	"userData64\x88\x01\x01\x12$\n" +
-	"\vuser_data32\x18\x03 \x01(\rH\x02R\n" +
+	"\ttimestamp\x18\x05 \x01(\x04R\ttimestamp\"\xce\x03\n" +
+	"\vQueryFilter\x12'\n" +
+	"\ruser_data_128\x18\x01 \x01(\tH\x00R\vuserData128\x88\x01\x01\x12%\n" +
+	"\fuser_data_64\x18\x02 \x01(\x04H\x01R\n" +
+	"userData64\x88\x01\x01\x12%\n" +
+	"\fuser_data_32\x18\x03 \x01(\rH\x02R\n" +
 	"userData32\x88\x01\x01\x12\x17\n" +
 	"\x04code\x18\x04 \x01(\rH\x03R\x04code\x88\x01\x01\x12\x1b\n" +
 	"\x06ledger\x18\x05 \x01(\rH\x04R\x06ledger\x88\x01\x01\x12(\n" +
 	"\rtimestamp_min\x18\x06 \x01(\x04H\x05R\ftimestampMin\x88\x01\x01\x12(\n" +
 	"\rtimestamp_max\x18\a \x01(\x04H\x06R\ftimestampMax\x88\x01\x01\x12\x14\n" +
 	"\x05limit\x18\b \x01(\rR\x05limit\x122\n" +
-	"\x05flags\x18\t \x01(\v2\x17.proto.QueryFilterFlagsH\aR\x05flags\x88\x01\x01B\x0f\n" +
-	"\r_user_data128B\x0e\n" +
-	"\f_user_data64B\x0e\n" +
-	"\f_user_data32B\a\n" +
+	"\x05flags\x18\t \x01(\v2\x17.proto.QueryFilterFlagsH\aR\x05flags\x88\x01\x01B\x10\n" +
+	"\x0e_user_data_128B\x0f\n" +
+	"\r_user_data_64B\x0f\n" +
+	"\r_user_data_32B\a\n" +
 	"\x05_codeB\t\n" +
 	"\a_ledgerB\x10\n" +
 	"\x0e_timestamp_minB\x10\n" +
