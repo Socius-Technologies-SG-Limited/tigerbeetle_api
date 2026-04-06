@@ -90,6 +90,14 @@ func (m *MockTigerBeetleClient) GetAccountBalances(filter types.AccountFilter) (
 	return args.Get(0).([]types.AccountBalance), args.Error(1)
 }
 
+func (m *MockTigerBeetleClient) GetChangeEvents(filter types.ChangeEventsFilter) ([]types.ChangeEvent, error) {
+	args := m.Called(filter)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]types.ChangeEvent), args.Error(1)
+}
+
 func TestQueryTransfers(t *testing.T) {
 	mockClient := new(MockTigerBeetleClient)
 	app := &App{TB: mockClient}
