@@ -15,7 +15,6 @@ import (
 	"github.com/lil5/tigerbeetle_api/proto"
 	"github.com/samber/lo"
 	tigerbeetle_go "github.com/tigerbeetle/tigerbeetle-go"
-	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
 )
 
 var (
@@ -30,7 +29,7 @@ type TimedPayloadResponse struct {
 type TimedPayload struct {
 	buf       *timedbuf.TimedBuf[TimedPayload]
 	c         chan TimedPayloadResponse
-	Transfers []types.Transfer
+	Transfers []tigerbeetle_go.Transfer
 }
 
 type App struct {
@@ -60,12 +59,20 @@ func (a *App) Close() {
 
 const TB_MAX_BATCH_SIZE = 8190
 
-func ParseClusterID(s string) (types.Uint128, error) {
+func totalPayloadLen(payloads []TimedPayload) int {
+	n := 0
+	for _, p := range payloads {
+		n += len(p.Transfers)
+	}
+	return n
+}
+
+func ParseClusterID(s string) (tigerbeetle_go.Uint128, error) {
 	var id big.Int
 	if _, ok := id.SetString(s, 10); !ok {
-		return types.Uint128{}, errors.New("invalid cluster ID: " + s)
+		return tigerbeetle_go.Uint128{}, errors.New("invalid cluster ID: " + s)
 	}
-	return types.BigIntToUint128(id), nil
+	return tigerbeetle_go.BigIntToUint128(&id), nil
 }
 
 func NewApp() *App {
@@ -91,14 +98,19 @@ func NewApp() *App {
 
 		flushFunc := func(payloads []TimedPayload) {
 			lenPayloads := float64(len(payloads))
+
+			// Concatenate every payload's transfers in order, splitting into
+			// batches no larger than TB_MAX_BATCH_SIZE. Per-payload demux
+			// below relies on the input order being preserved.
 			totalTransferSize := 0
 			indexBatch := 0
-			transferBatches := [][]types.Transfer{[]types.Transfer{}}
+			transferBatches := [][]tigerbeetle_go.Transfer{{}}
 			for _, payload := range payloads {
 				totalTransferSize += len(payload.Transfers)
 				if totalTransferSize > TB_MAX_BATCH_SIZE {
 					indexBatch++
-					transferBatches = append(transferBatches, []types.Transfer{})
+					transferBatches = append(transferBatches, []tigerbeetle_go.Transfer{})
+					totalTransferSize = len(payload.Transfers)
 				}
 				transferBatches[indexBatch] = append(transferBatches[indexBatch], payload.Transfers...)
 			}
@@ -110,25 +122,54 @@ func NewApp() *App {
 				metrics.TotalBufferContentsGte80.Inc()
 			} else {
 				metrics.TotalBufferContentsLt80.Inc()
-				// slog.Info("Buffer contents less than 80%", "contents %", int((lenPayloads/bufSizeFull)*100))
 			}
 
-			var replies []*proto.CreateTransfersReplyItem
+			// In 0.17 each TB call returns a dense result slice (one entry
+			// per input transfer). Accumulate across batches so we can demux
+			// per-payload at the end.
+			allReplies := make([]*proto.CreateTransfersReplyItem, 0, totalPayloadLen(payloads))
+			var flushErr error
 			for _, transfers := range transferBatches {
+				if len(transfers) == 0 {
+					continue
+				}
 				metrics.TotalCreateTransferTx.Add(float64(len(transfers)))
 				metrics.TotalTbCreateTransfersCall.Inc()
-				if !config.Config.IsDryRun {
-					results, err := tb.CreateTransfers(transfers)
-					replies = ResultsToReply(results, transfers, err)
+				if config.Config.IsDryRun {
+					continue
 				}
-				metrics.TotalCreateTransferTxErr.Add(float64(len(replies)))
+				results, err := tb.CreateTransfers(transfers)
+				if err != nil {
+					flushErr = err
+					break
+				}
+				batchReplies := ResultsToReply(results, transfers)
+				for _, r := range batchReplies {
+					if r.Status != proto.CreateTransferStatus_TransferCreated {
+						metrics.TotalCreateTransferTxErr.Inc()
+					}
+				}
+				allReplies = append(allReplies, batchReplies...)
 			}
-			res := TimedPayloadResponse{
-				Replies: replies,
-				Error:   err,
-			}
+
+			// Demux: hand each payload exactly len(payload.Transfers) replies.
+			// Under dry-run or a TB error, allReplies may be shorter than the
+			// total — give each caller whatever prefix is available (empty if
+			// nothing) along with the error.
+			cursor := 0
 			for _, payload := range payloads {
-				payload.c <- res
+				want := len(payload.Transfers)
+				var slice []*proto.CreateTransfersReplyItem
+				if cursor+want <= len(allReplies) {
+					slice = allReplies[cursor : cursor+want]
+				} else if cursor < len(allReplies) {
+					slice = allReplies[cursor:]
+				}
+				cursor += want
+				payload.c <- TimedPayloadResponse{
+					Replies: slice,
+					Error:   flushErr,
+				}
 			}
 		}
 		for i := range config.Config.BufferCluster {
@@ -150,36 +191,36 @@ func (s *App) Health() error {
 }
 
 func (s *App) GetID(ctx context.Context, in *proto.GetIDRequest) (*proto.GetIDReply, error) {
-	return &proto.GetIDReply{Id: types.ID().String()}, nil
+	return &proto.GetIDReply{Id: tigerbeetle_go.ID().String()}, nil
 }
 
 func (s *App) CreateAccounts(ctx context.Context, in *proto.CreateAccountsRequest) (*proto.CreateAccountsReply, error) {
 	if len(in.Accounts) == 0 {
 		return nil, ErrZeroAccounts
 	}
-	accounts := []types.Account{}
+	accounts := []tigerbeetle_go.Account{}
 	for _, inAccount := range in.Accounts {
 		id, err := HexStringToUint128(inAccount.Id)
 		if err != nil {
 			return nil, err
 		}
-		userData128, err := types.HexStringToUint128(inAccount.UserData128)
+		userData128, err := tigerbeetle_go.HexStringToUint128(inAccount.UserData128)
 		if err != nil {
 			return nil, err
 		}
-		flags := types.AccountFlags{}
+		flags := tigerbeetle_go.AccountFlags{}
 		if inAccount.Flags != nil {
 			flags.Linked = lo.FromPtrOr(inAccount.Flags.Linked, false)
 			flags.DebitsMustNotExceedCredits = lo.FromPtrOr(inAccount.Flags.DebitsMustNotExceedCredits, false)
 			flags.CreditsMustNotExceedDebits = lo.FromPtrOr(inAccount.Flags.CreditsMustNotExceedDebits, false)
 			flags.History = lo.FromPtrOr(inAccount.Flags.History, false)
 		}
-		accounts = append(accounts, types.Account{
+		accounts = append(accounts, tigerbeetle_go.Account{
 			ID:             *id,
-			DebitsPending:  types.ToUint128(uint64(inAccount.DebitsPending)),
-			DebitsPosted:   types.ToUint128(uint64(inAccount.DebitsPosted)),
-			CreditsPending: types.ToUint128(uint64(inAccount.CreditsPending)),
-			CreditsPosted:  types.ToUint128(uint64(inAccount.CreditsPosted)),
+			DebitsPending:  tigerbeetle_go.ToUint128(uint64(inAccount.DebitsPending)),
+			DebitsPosted:   tigerbeetle_go.ToUint128(uint64(inAccount.DebitsPosted)),
+			CreditsPending: tigerbeetle_go.ToUint128(uint64(inAccount.CreditsPending)),
+			CreditsPosted:  tigerbeetle_go.ToUint128(uint64(inAccount.CreditsPosted)),
 			UserData128:    userData128,
 			UserData64:     uint64(inAccount.UserData64),
 			UserData32:     uint32(inAccount.UserData32),
@@ -190,19 +231,18 @@ func (s *App) CreateAccounts(ctx context.Context, in *proto.CreateAccountsReques
 	}
 
 	metrics.TotalTbCreateAccountsCall.Inc()
+	metrics.TotalCreateAccountsTx.Add(float64(len(accounts)))
 	results, err := s.TB.CreateAccounts(accounts)
 	if err != nil {
 		return nil, err
 	}
 
-	resArr := []*proto.CreateAccountsReplyItem{}
-	for _, r := range results {
-		resArr = append(resArr, &proto.CreateAccountsReplyItem{
-			Index:  int32(r.Index),
-			Result: proto.CreateAccountResult(r.Result),
-		})
+	resArr := AccountResultsToReply(results, accounts)
+	for _, r := range resArr {
+		if r.Status != proto.CreateAccountStatus_AccountCreated {
+			metrics.TotalCreateAccountsTxErr.Inc()
+		}
 	}
-	metrics.TotalCreateAccountsTxErr.Add(float64(len(resArr)))
 	return &proto.CreateAccountsReply{
 		Results: resArr,
 	}, nil
@@ -212,13 +252,13 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 	if len(in.Transfers) == 0 {
 		return nil, ErrZeroTransfers
 	}
-	transfers := []types.Transfer{}
+	transfers := []tigerbeetle_go.Transfer{}
 	for _, inTransfer := range in.Transfers {
 		id, err := HexStringToUint128(inTransfer.Id)
 		if err != nil {
 			return nil, err
 		}
-		flags := types.TransferFlags{}
+		flags := tigerbeetle_go.TransferFlags{}
 		if inTransfer.TransferFlags != nil {
 			flags.Linked = lo.FromPtrOr(inTransfer.TransferFlags.Linked, false)
 			flags.Pending = lo.FromPtrOr(inTransfer.TransferFlags.Pending, false)
@@ -242,15 +282,15 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 		if err != nil {
 			return nil, err
 		}
-		userData128, err := types.HexStringToUint128(inTransfer.UserData128)
+		userData128, err := tigerbeetle_go.HexStringToUint128(inTransfer.UserData128)
 		if err != nil {
 			return nil, err
 		}
-		transfers = append(transfers, types.Transfer{
+		transfers = append(transfers, tigerbeetle_go.Transfer{
 			ID:              *id,
 			DebitAccountID:  *debitAccountID,
 			CreditAccountID: *creditAccountID,
-			Amount:          types.ToUint128(uint64(inTransfer.Amount)),
+			Amount:          tigerbeetle_go.ToUint128(uint64(inTransfer.Amount)),
 			PendingID:       *pendingID,
 			UserData128:     userData128,
 			UserData64:      uint64(inTransfer.UserData64),
@@ -280,10 +320,16 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 		metrics.TotalTbCreateTransfersCall.Inc()
 		metrics.TotalCreateTransferTx.Add(float64(len(transfers)))
 		if !config.Config.IsDryRun {
-			var results []types.TransferEventResult
+			var results []tigerbeetle_go.CreateTransferResult
 			results, err = s.TB.CreateTransfers(transfers)
-			replies = ResultsToReply(results, transfers, err)
-			metrics.TotalCreateTransferTxErr.Add(float64(len(results)))
+			if err == nil {
+				replies = ResultsToReply(results, transfers)
+				for _, r := range replies {
+					if r.Status != proto.CreateTransferStatus_TransferCreated {
+						metrics.TotalCreateTransferTxErr.Inc()
+					}
+				}
+			}
 		}
 	}
 
@@ -300,7 +346,7 @@ func (s *App) LookupAccounts(ctx context.Context, in *proto.LookupAccountsReques
 	if len(in.AccountIds) == 0 {
 		return nil, ErrZeroAccounts
 	}
-	ids := []types.Uint128{}
+	ids := []tigerbeetle_go.Uint128{}
 	for _, inID := range in.AccountIds {
 		id, err := HexStringToUint128(inID)
 		if err != nil {
@@ -315,7 +361,7 @@ func (s *App) LookupAccounts(ctx context.Context, in *proto.LookupAccountsReques
 		return nil, err
 	}
 
-	pAccounts := lo.Map(res, func(a types.Account, _ int) *proto.Account {
+	pAccounts := lo.Map(res, func(a tigerbeetle_go.Account, _ int) *proto.Account {
 		return AccountToProtoAccount(a)
 	})
 	return &proto.LookupAccountsReply{Accounts: pAccounts}, nil
@@ -325,7 +371,7 @@ func (s *App) LookupTransfers(ctx context.Context, in *proto.LookupTransfersRequ
 	if len(in.TransferIds) == 0 {
 		return nil, ErrZeroTransfers
 	}
-	ids := []types.Uint128{}
+	ids := []tigerbeetle_go.Uint128{}
 	for _, inID := range in.TransferIds {
 		id, err := HexStringToUint128(inID)
 		if err != nil {
@@ -340,7 +386,7 @@ func (s *App) LookupTransfers(ctx context.Context, in *proto.LookupTransfersRequ
 		return nil, err
 	}
 
-	pTransfers := lo.Map(res, func(a types.Transfer, _ int) *proto.Transfer {
+	pTransfers := lo.Map(res, func(a tigerbeetle_go.Transfer, _ int) *proto.Transfer {
 		return TransferToProtoTransfer(a)
 	})
 	return &proto.LookupTransfersReply{Transfers: pTransfers}, nil
@@ -360,7 +406,7 @@ func (s *App) GetAccountTransfers(ctx context.Context, in *proto.GetAccountTrans
 		return nil, err
 	}
 
-	pTransfers := lo.Map(res, func(v types.Transfer, _ int) *proto.Transfer {
+	pTransfers := lo.Map(res, func(v tigerbeetle_go.Transfer, _ int) *proto.Transfer {
 		return TransferToProtoTransfer(v)
 	})
 	return &proto.GetAccountTransfersReply{Transfers: pTransfers}, nil
@@ -380,7 +426,7 @@ func (s *App) GetAccountBalances(ctx context.Context, in *proto.GetAccountBalanc
 		return nil, err
 	}
 
-	pBalances := lo.Map(res, func(v types.AccountBalance, _ int) *proto.AccountBalance {
+	pBalances := lo.Map(res, func(v tigerbeetle_go.AccountBalance, _ int) *proto.AccountBalance {
 		return AccountBalanceFromTigerbeetleToProto(v)
 	})
 	return &proto.GetAccountBalancesReply{AccountBalances: pBalances}, nil
@@ -405,7 +451,7 @@ func (s *App) QueryTransfers(ctx context.Context, in *proto.QueryTransfersReques
 		return nil, err
 	}
 
-	pTransfers := lo.Map(res, func(v types.Transfer, _ int) *proto.Transfer {
+	pTransfers := lo.Map(res, func(v tigerbeetle_go.Transfer, _ int) *proto.Transfer {
 		return TransferToProtoTransfer(v)
 	})
 	return &proto.QueryTransfersReply{Transfers: pTransfers}, nil
@@ -430,7 +476,7 @@ func (s *App) QueryAccounts(ctx context.Context, in *proto.QueryAccountsRequest)
 		return nil, err
 	}
 
-	pAccounts := lo.Map(res, func(v types.Account, _ int) *proto.Account {
+	pAccounts := lo.Map(res, func(v tigerbeetle_go.Account, _ int) *proto.Account {
 		return AccountToProtoAccount(v)
 	})
 	return &proto.QueryAccountsReply{Accounts: pAccounts}, nil

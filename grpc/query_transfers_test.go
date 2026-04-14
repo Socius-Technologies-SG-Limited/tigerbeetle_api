@@ -9,7 +9,7 @@ import (
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
+	tigerbeetle_go "github.com/tigerbeetle/tigerbeetle-go"
 )
 
 // MockTigerBeetleClient is a mock client for testing
@@ -17,20 +17,20 @@ type MockTigerBeetleClient struct {
 	mock.Mock
 }
 
-func (m *MockTigerBeetleClient) QueryTransfers(filter types.QueryFilter) ([]types.Transfer, error) {
+func (m *MockTigerBeetleClient) QueryTransfers(filter tigerbeetle_go.QueryFilter) ([]tigerbeetle_go.Transfer, error) {
 	args := m.Called(filter)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).([]types.Transfer), args.Error(1)
+	return args.Get(0).([]tigerbeetle_go.Transfer), args.Error(1)
 }
 
-func (m *MockTigerBeetleClient) QueryAccounts(filter types.QueryFilter) ([]types.Account, error) {
+func (m *MockTigerBeetleClient) QueryAccounts(filter tigerbeetle_go.QueryFilter) ([]tigerbeetle_go.Account, error) {
 	args := m.Called(filter)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).([]types.Account), args.Error(1)
+	return args.Get(0).([]tigerbeetle_go.Account), args.Error(1)
 }
 
 func (m *MockTigerBeetleClient) Nop() error {
@@ -42,60 +42,60 @@ func (m *MockTigerBeetleClient) Close() {
 	m.Called()
 }
 
-func (m *MockTigerBeetleClient) CreateAccounts(accounts []types.Account) ([]types.AccountEventResult, error) {
+func (m *MockTigerBeetleClient) CreateAccounts(accounts []tigerbeetle_go.Account) ([]tigerbeetle_go.CreateAccountResult, error) {
 	args := m.Called(accounts)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).([]types.AccountEventResult), args.Error(1)
+	return args.Get(0).([]tigerbeetle_go.CreateAccountResult), args.Error(1)
 }
 
-func (m *MockTigerBeetleClient) CreateTransfers(transfers []types.Transfer) ([]types.TransferEventResult, error) {
+func (m *MockTigerBeetleClient) CreateTransfers(transfers []tigerbeetle_go.Transfer) ([]tigerbeetle_go.CreateTransferResult, error) {
 	args := m.Called(transfers)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).([]types.TransferEventResult), args.Error(1)
+	return args.Get(0).([]tigerbeetle_go.CreateTransferResult), args.Error(1)
 }
 
-func (m *MockTigerBeetleClient) LookupAccounts(ids []types.Uint128) ([]types.Account, error) {
+func (m *MockTigerBeetleClient) LookupAccounts(ids []tigerbeetle_go.Uint128) ([]tigerbeetle_go.Account, error) {
 	args := m.Called(ids)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).([]types.Account), args.Error(1)
+	return args.Get(0).([]tigerbeetle_go.Account), args.Error(1)
 }
 
-func (m *MockTigerBeetleClient) LookupTransfers(ids []types.Uint128) ([]types.Transfer, error) {
+func (m *MockTigerBeetleClient) LookupTransfers(ids []tigerbeetle_go.Uint128) ([]tigerbeetle_go.Transfer, error) {
 	args := m.Called(ids)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).([]types.Transfer), args.Error(1)
+	return args.Get(0).([]tigerbeetle_go.Transfer), args.Error(1)
 }
 
-func (m *MockTigerBeetleClient) GetAccountTransfers(filter types.AccountFilter) ([]types.Transfer, error) {
+func (m *MockTigerBeetleClient) GetAccountTransfers(filter tigerbeetle_go.AccountFilter) ([]tigerbeetle_go.Transfer, error) {
 	args := m.Called(filter)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).([]types.Transfer), args.Error(1)
+	return args.Get(0).([]tigerbeetle_go.Transfer), args.Error(1)
 }
 
-func (m *MockTigerBeetleClient) GetAccountBalances(filter types.AccountFilter) ([]types.AccountBalance, error) {
+func (m *MockTigerBeetleClient) GetAccountBalances(filter tigerbeetle_go.AccountFilter) ([]tigerbeetle_go.AccountBalance, error) {
 	args := m.Called(filter)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).([]types.AccountBalance), args.Error(1)
+	return args.Get(0).([]tigerbeetle_go.AccountBalance), args.Error(1)
 }
 
-func (m *MockTigerBeetleClient) GetChangeEvents(filter types.ChangeEventsFilter) ([]types.ChangeEvent, error) {
+func (m *MockTigerBeetleClient) GetChangeEvents(filter tigerbeetle_go.ChangeEventsFilter) ([]tigerbeetle_go.ChangeEvent, error) {
 	args := m.Called(filter)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).([]types.ChangeEvent), args.Error(1)
+	return args.Get(0).([]tigerbeetle_go.ChangeEvent), args.Error(1)
 }
 
 func TestQueryTransfers(t *testing.T) {
@@ -125,8 +125,8 @@ func TestQueryTransfers(t *testing.T) {
 			Filter: filter,
 		}
 
-		mockClient.On("QueryTransfers", mock.AnythingOfType("types.QueryFilter")).
-			Return([]types.Transfer{}, nil).Once()
+		mockClient.On("QueryTransfers", mock.AnythingOfType("tigerbeetle_go.QueryFilter")).
+			Return([]tigerbeetle_go.Transfer{}, nil).Once()
 
 		resp, err := app.QueryTransfers(context.Background(), req)
 		assert.NoError(t, err)
@@ -150,13 +150,13 @@ func TestQueryTransfers(t *testing.T) {
 		}
 
 		// Mock transfer data
-		mockTransfers := []types.Transfer{
+		mockTransfers := []tigerbeetle_go.Transfer{
 			{
-				ID:              types.ToUint128(1),
-				DebitAccountID:  types.ToUint128(100),
-				CreditAccountID: types.ToUint128(200),
-				Amount:          types.ToUint128(1000),
-				UserData128:     types.ToUint128(1),
+				ID:              tigerbeetle_go.ToUint128(1),
+				DebitAccountID:  tigerbeetle_go.ToUint128(100),
+				CreditAccountID: tigerbeetle_go.ToUint128(200),
+				Amount:          tigerbeetle_go.ToUint128(1000),
+				UserData128:     tigerbeetle_go.ToUint128(1),
 				UserData64:      100,
 				UserData32:      10,
 				Ledger:          0,
@@ -165,7 +165,7 @@ func TestQueryTransfers(t *testing.T) {
 			},
 		}
 
-		mockClient.On("QueryTransfers", mock.AnythingOfType("types.QueryFilter")).
+		mockClient.On("QueryTransfers", mock.AnythingOfType("tigerbeetle_go.QueryFilter")).
 			Return(mockTransfers, nil).Once()
 
 		resp, err := app.QueryTransfers(context.Background(), req)
@@ -189,12 +189,12 @@ func TestQueryTransfers(t *testing.T) {
 		}
 
 		// Mock 5 transfers but expect only 2 due to limit
-		mockTransfers := []types.Transfer{
-			{ID: types.ToUint128(1), UserData64: 100},
-			{ID: types.ToUint128(2), UserData64: 100},
+		mockTransfers := []tigerbeetle_go.Transfer{
+			{ID: tigerbeetle_go.ToUint128(1), UserData64: 100},
+			{ID: tigerbeetle_go.ToUint128(2), UserData64: 100},
 		}
 
-		mockClient.On("QueryTransfers", mock.AnythingOfType("types.QueryFilter")).
+		mockClient.On("QueryTransfers", mock.AnythingOfType("tigerbeetle_go.QueryFilter")).
 			Return(mockTransfers, nil).Once()
 
 		resp, err := app.QueryTransfers(context.Background(), req)
@@ -217,13 +217,13 @@ func TestQueryTransfers(t *testing.T) {
 		}
 
 		// Mock transfers in reverse order
-		mockTransfers := []types.Transfer{
-			{ID: types.ToUint128(3), Timestamp: 3000},
-			{ID: types.ToUint128(2), Timestamp: 2000},
-			{ID: types.ToUint128(1), Timestamp: 1000},
+		mockTransfers := []tigerbeetle_go.Transfer{
+			{ID: tigerbeetle_go.ToUint128(3), Timestamp: 3000},
+			{ID: tigerbeetle_go.ToUint128(2), Timestamp: 2000},
+			{ID: tigerbeetle_go.ToUint128(1), Timestamp: 1000},
 		}
 
-		mockClient.On("QueryTransfers", mock.AnythingOfType("types.QueryFilter")).
+		mockClient.On("QueryTransfers", mock.AnythingOfType("tigerbeetle_go.QueryFilter")).
 			Return(mockTransfers, nil).Once()
 
 		resp, err := app.QueryTransfers(context.Background(), req)
@@ -249,13 +249,13 @@ func TestQueryTransfers(t *testing.T) {
 		}
 
 		// Mock transfers within timestamp range
-		mockTransfers := []types.Transfer{
-			{ID: types.ToUint128(2), Timestamp: 2000},
-			{ID: types.ToUint128(3), Timestamp: 3000},
-			{ID: types.ToUint128(4), Timestamp: 4000},
+		mockTransfers := []tigerbeetle_go.Transfer{
+			{ID: tigerbeetle_go.ToUint128(2), Timestamp: 2000},
+			{ID: tigerbeetle_go.ToUint128(3), Timestamp: 3000},
+			{ID: tigerbeetle_go.ToUint128(4), Timestamp: 4000},
 		}
 
-		mockClient.On("QueryTransfers", mock.AnythingOfType("types.QueryFilter")).
+		mockClient.On("QueryTransfers", mock.AnythingOfType("tigerbeetle_go.QueryFilter")).
 			Return(mockTransfers, nil).Once()
 
 		resp, err := app.QueryTransfers(context.Background(), req)
@@ -278,13 +278,13 @@ func TestQueryTransfers(t *testing.T) {
 			Filter: filter,
 		}
 
-		mockTransfers := []types.Transfer{
+		mockTransfers := []tigerbeetle_go.Transfer{
 			{
-				ID:              types.ToUint128(1),
-				DebitAccountID:  types.ToUint128(100),
-				CreditAccountID: types.ToUint128(200),
-				Amount:          types.ToUint128(1000),
-				UserData128:     types.ToUint128(1000),
+				ID:              tigerbeetle_go.ToUint128(1),
+				DebitAccountID:  tigerbeetle_go.ToUint128(100),
+				CreditAccountID: tigerbeetle_go.ToUint128(200),
+				Amount:          tigerbeetle_go.ToUint128(1000),
+				UserData128:     tigerbeetle_go.ToUint128(1000),
 				UserData64:      100,
 				UserData32:      10,
 				Ledger:          1,
@@ -292,7 +292,7 @@ func TestQueryTransfers(t *testing.T) {
 			},
 		}
 
-		mockClient.On("QueryTransfers", mock.AnythingOfType("types.QueryFilter")).
+		mockClient.On("QueryTransfers", mock.AnythingOfType("tigerbeetle_go.QueryFilter")).
 			Return(mockTransfers, nil).Once()
 
 		resp, err := app.QueryTransfers(context.Background(), req)
@@ -312,7 +312,7 @@ func TestQueryTransfers(t *testing.T) {
 		}
 
 		tbError := errors.New("TigerBeetle connection error")
-		mockClient.On("QueryTransfers", mock.AnythingOfType("types.QueryFilter")).
+		mockClient.On("QueryTransfers", mock.AnythingOfType("tigerbeetle_go.QueryFilter")).
 			Return(nil, tbError).Once()
 
 		_, err := app.QueryTransfers(context.Background(), req)
@@ -345,12 +345,12 @@ func TestQueryTransfers(t *testing.T) {
 			Filter: filter,
 		}
 
-		mockTransfers := []types.Transfer{
-			{ID: types.ToUint128(1)},
-			{ID: types.ToUint128(2)},
+		mockTransfers := []tigerbeetle_go.Transfer{
+			{ID: tigerbeetle_go.ToUint128(1)},
+			{ID: tigerbeetle_go.ToUint128(2)},
 		}
 
-		mockClient.On("QueryTransfers", mock.AnythingOfType("types.QueryFilter")).
+		mockClient.On("QueryTransfers", mock.AnythingOfType("tigerbeetle_go.QueryFilter")).
 			Return(mockTransfers, nil).Once()
 
 		resp, err := app.QueryTransfers(context.Background(), req)

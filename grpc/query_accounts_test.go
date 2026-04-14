@@ -9,7 +9,7 @@ import (
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
+	tigerbeetle_go "github.com/tigerbeetle/tigerbeetle-go"
 )
 
 func TestQueryAccounts(t *testing.T) {
@@ -39,8 +39,8 @@ func TestQueryAccounts(t *testing.T) {
 			Filter: filter,
 		}
 
-		mockClient.On("QueryAccounts", mock.AnythingOfType("types.QueryFilter")).
-			Return([]types.Account{}, nil).Once()
+		mockClient.On("QueryAccounts", mock.AnythingOfType("tigerbeetle_go.QueryFilter")).
+			Return([]tigerbeetle_go.Account{}, nil).Once()
 
 		resp, err := app.QueryAccounts(context.Background(), req)
 		assert.NoError(t, err)
@@ -64,12 +64,12 @@ func TestQueryAccounts(t *testing.T) {
 		}
 
 		// Mock account data
-		mockAccounts := []types.Account{
+		mockAccounts := []tigerbeetle_go.Account{
 			{
-				ID:            types.ToUint128(1),
-				DebitsPosted:  types.ToUint128(1000),
-				CreditsPosted: types.ToUint128(500),
-				UserData128:   types.ToUint128(1),
+				ID:            tigerbeetle_go.ToUint128(1),
+				DebitsPosted:  tigerbeetle_go.ToUint128(1000),
+				CreditsPosted: tigerbeetle_go.ToUint128(500),
+				UserData128:   tigerbeetle_go.ToUint128(1),
 				UserData64:    100,
 				UserData32:    10,
 				Ledger:        0,
@@ -78,7 +78,7 @@ func TestQueryAccounts(t *testing.T) {
 			},
 		}
 
-		mockClient.On("QueryAccounts", mock.AnythingOfType("types.QueryFilter")).
+		mockClient.On("QueryAccounts", mock.AnythingOfType("tigerbeetle_go.QueryFilter")).
 			Return(mockAccounts, nil).Once()
 
 		resp, err := app.QueryAccounts(context.Background(), req)
@@ -102,12 +102,12 @@ func TestQueryAccounts(t *testing.T) {
 		}
 
 		// Mock 2 accounts but expect only 2 due to limit
-		mockAccounts := []types.Account{
-			{ID: types.ToUint128(1), UserData64: 100},
-			{ID: types.ToUint128(2), UserData64: 100},
+		mockAccounts := []tigerbeetle_go.Account{
+			{ID: tigerbeetle_go.ToUint128(1), UserData64: 100},
+			{ID: tigerbeetle_go.ToUint128(2), UserData64: 100},
 		}
 
-		mockClient.On("QueryAccounts", mock.AnythingOfType("types.QueryFilter")).
+		mockClient.On("QueryAccounts", mock.AnythingOfType("tigerbeetle_go.QueryFilter")).
 			Return(mockAccounts, nil).Once()
 
 		resp, err := app.QueryAccounts(context.Background(), req)
@@ -130,13 +130,13 @@ func TestQueryAccounts(t *testing.T) {
 		}
 
 		// Mock accounts in reverse order
-		mockAccounts := []types.Account{
-			{ID: types.ToUint128(3), Timestamp: 3000},
-			{ID: types.ToUint128(2), Timestamp: 2000},
-			{ID: types.ToUint128(1), Timestamp: 1000},
+		mockAccounts := []tigerbeetle_go.Account{
+			{ID: tigerbeetle_go.ToUint128(3), Timestamp: 3000},
+			{ID: tigerbeetle_go.ToUint128(2), Timestamp: 2000},
+			{ID: tigerbeetle_go.ToUint128(1), Timestamp: 1000},
 		}
 
-		mockClient.On("QueryAccounts", mock.AnythingOfType("types.QueryFilter")).
+		mockClient.On("QueryAccounts", mock.AnythingOfType("tigerbeetle_go.QueryFilter")).
 			Return(mockAccounts, nil).Once()
 
 		resp, err := app.QueryAccounts(context.Background(), req)
@@ -162,13 +162,13 @@ func TestQueryAccounts(t *testing.T) {
 		}
 
 		// Mock accounts within timestamp range
-		mockAccounts := []types.Account{
-			{ID: types.ToUint128(2), Timestamp: 2000},
-			{ID: types.ToUint128(3), Timestamp: 3000},
-			{ID: types.ToUint128(4), Timestamp: 4000},
+		mockAccounts := []tigerbeetle_go.Account{
+			{ID: tigerbeetle_go.ToUint128(2), Timestamp: 2000},
+			{ID: tigerbeetle_go.ToUint128(3), Timestamp: 3000},
+			{ID: tigerbeetle_go.ToUint128(4), Timestamp: 4000},
 		}
 
-		mockClient.On("QueryAccounts", mock.AnythingOfType("types.QueryFilter")).
+		mockClient.On("QueryAccounts", mock.AnythingOfType("tigerbeetle_go.QueryFilter")).
 			Return(mockAccounts, nil).Once()
 
 		resp, err := app.QueryAccounts(context.Background(), req)
@@ -191,10 +191,10 @@ func TestQueryAccounts(t *testing.T) {
 			Filter: filter,
 		}
 
-		mockAccounts := []types.Account{
+		mockAccounts := []tigerbeetle_go.Account{
 			{
-				ID:          types.ToUint128(1),
-				UserData128: types.ToUint128(1000),
+				ID:          tigerbeetle_go.ToUint128(1),
+				UserData128: tigerbeetle_go.ToUint128(1000),
 				UserData64:  100,
 				UserData32:  10,
 				Ledger:      1,
@@ -202,7 +202,7 @@ func TestQueryAccounts(t *testing.T) {
 			},
 		}
 
-		mockClient.On("QueryAccounts", mock.AnythingOfType("types.QueryFilter")).
+		mockClient.On("QueryAccounts", mock.AnythingOfType("tigerbeetle_go.QueryFilter")).
 			Return(mockAccounts, nil).Once()
 
 		resp, err := app.QueryAccounts(context.Background(), req)
@@ -222,7 +222,7 @@ func TestQueryAccounts(t *testing.T) {
 		}
 
 		tbError := errors.New("TigerBeetle connection error")
-		mockClient.On("QueryAccounts", mock.AnythingOfType("types.QueryFilter")).
+		mockClient.On("QueryAccounts", mock.AnythingOfType("tigerbeetle_go.QueryFilter")).
 			Return(nil, tbError).Once()
 
 		_, err := app.QueryAccounts(context.Background(), req)
@@ -255,12 +255,12 @@ func TestQueryAccounts(t *testing.T) {
 			Filter: filter,
 		}
 
-		mockAccounts := []types.Account{
-			{ID: types.ToUint128(1)},
-			{ID: types.ToUint128(2)},
+		mockAccounts := []tigerbeetle_go.Account{
+			{ID: tigerbeetle_go.ToUint128(1)},
+			{ID: tigerbeetle_go.ToUint128(2)},
 		}
 
-		mockClient.On("QueryAccounts", mock.AnythingOfType("types.QueryFilter")).
+		mockClient.On("QueryAccounts", mock.AnythingOfType("tigerbeetle_go.QueryFilter")).
 			Return(mockAccounts, nil).Once()
 
 		resp, err := app.QueryAccounts(context.Background(), req)

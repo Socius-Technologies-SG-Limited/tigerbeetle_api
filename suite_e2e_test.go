@@ -152,7 +152,13 @@ func (s *MyTestSuite) TestCalls() {
 		s.Equal(http.StatusOK, result.Response.StatusCode, result.Body)
 		json := gjson.Parse(result.Body)
 
-		s.Len(json.Get("results").Array(), 0, result.Body)
+		// 0.17: dense result array — one entry per input account, success
+		// carries status == 0 (AccountCreated) via proto mapping.
+		results := json.Get("results").Array()
+		s.Len(results, 2, result.Body)
+		for i, r := range results {
+			s.Zero(r.Get("status").Int(), "accounts[%d] should be AccountCreated; got %s", i, r.Raw)
+		}
 	})
 
 	s.Run("LookupAccounts empty", func() {
@@ -222,7 +228,11 @@ func (s *MyTestSuite) TestCalls() {
 		})
 		result := resultFunc()
 		s.Equal(http.StatusOK, result.Response.StatusCode)
-		s.Len(gjson.Get(result.Body, "results").Array(), 0)
+		results := gjson.Get(result.Body, "results").Array()
+		s.Len(results, 2)
+		for i, r := range results {
+			s.Zero(r.Get("status").Int(), "transfers[%d] should be TransferCreated; got %s", i, r.Raw)
+		}
 	})
 
 	s.Run("LookupAccounts after 1 transfer", func() {

@@ -5,10 +5,10 @@ import (
 
 	"github.com/lil5/tigerbeetle_api/proto"
 	"github.com/samber/lo"
-	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
+	tigerbeetle_go "github.com/tigerbeetle/tigerbeetle-go"
 )
 
-func AccountToProtoAccount(tbAccount types.Account) *proto.Account {
+func AccountToProtoAccount(tbAccount tigerbeetle_go.Account) *proto.Account {
 	tbFlags := tbAccount.AccountFlags()
 	pFlags := proto.AccountFlags{
 		Linked:                     lo.ToPtr(tbFlags.Linked),
@@ -19,10 +19,10 @@ func AccountToProtoAccount(tbAccount types.Account) *proto.Account {
 	}
 	return &proto.Account{
 		Id:             tbAccount.ID.String(),
-		DebitsPending:  lo.ToPtr(tbAccount.DebitsPending.BigInt()).Uint64(),
-		DebitsPosted:   lo.ToPtr(tbAccount.DebitsPosted.BigInt()).Uint64(),
-		CreditsPending: lo.ToPtr(tbAccount.CreditsPending.BigInt()).Uint64(),
-		CreditsPosted:  lo.ToPtr(tbAccount.CreditsPosted.BigInt()).Uint64(),
+		DebitsPending:  tbAccount.DebitsPending.BigInt().Uint64(),
+		DebitsPosted:   tbAccount.DebitsPosted.BigInt().Uint64(),
+		CreditsPending: tbAccount.CreditsPending.BigInt().Uint64(),
+		CreditsPosted:  tbAccount.CreditsPosted.BigInt().Uint64(),
 		UserData128:    tbAccount.UserData128.String(),
 		UserData64:     tbAccount.UserData64,
 		UserData32:     tbAccount.UserData32,
@@ -33,7 +33,7 @@ func AccountToProtoAccount(tbAccount types.Account) *proto.Account {
 	}
 }
 
-func TransferToProtoTransfer(tbTransfer types.Transfer) *proto.Transfer {
+func TransferToProtoTransfer(tbTransfer tigerbeetle_go.Transfer) *proto.Transfer {
 	tbFlags := tbTransfer.TransferFlags()
 	pFlags := &proto.TransferFlags{
 		Linked:              lo.ToPtr(tbFlags.Linked),
@@ -47,7 +47,7 @@ func TransferToProtoTransfer(tbTransfer types.Transfer) *proto.Transfer {
 		Imported:            lo.ToPtr(tbFlags.Imported),
 	}
 	var pendingId string
-	emptyUint128 := types.Uint128{}
+	emptyUint128 := tigerbeetle_go.Uint128{}
 	if tbTransfer.PendingID != emptyUint128 {
 		pendingId = tbTransfer.PendingID.String()
 	}
@@ -55,7 +55,7 @@ func TransferToProtoTransfer(tbTransfer types.Transfer) *proto.Transfer {
 		Id:              tbTransfer.ID.String(),
 		DebitAccountId:  tbTransfer.DebitAccountID.String(),
 		CreditAccountId: tbTransfer.CreditAccountID.String(),
-		Amount:          lo.ToPtr(tbTransfer.Amount.BigInt()).Int64(),
+		Amount:          tbTransfer.Amount.BigInt().Int64(),
 		PendingId:       lo.If[*string](pendingId == "", nil).Else(&pendingId),
 		UserData128:     tbTransfer.UserData128.String(),
 		UserData64:      tbTransfer.UserData64,
@@ -67,31 +67,31 @@ func TransferToProtoTransfer(tbTransfer types.Transfer) *proto.Transfer {
 	}
 }
 
-func AccountFilterFromProtoToTigerbeetle(pAccountFilter *proto.AccountFilter) (*types.AccountFilter, error) {
+func AccountFilterFromProtoToTigerbeetle(pAccountFilter *proto.AccountFilter) (*tigerbeetle_go.AccountFilter, error) {
 	accountID, err := HexStringToUint128(pAccountFilter.AccountId)
 	if err != nil {
 		return nil, err
 	}
 
-	var userData128 types.Uint128
+	var userData128 tigerbeetle_go.Uint128
 	if pAccountFilter.UserData128 != nil && *pAccountFilter.UserData128 != "" {
-		userData128, err = types.HexStringToUint128(*pAccountFilter.UserData128)
+		userData128, err = tigerbeetle_go.HexStringToUint128(*pAccountFilter.UserData128)
 		if err != nil {
 			slog.Error("invalid UserData128 hex string", "hex", *pAccountFilter.UserData128, "error", err)
 			return nil, err
 		}
 	}
 
-	var tbFlags types.AccountFilterFlags
+	var tbFlags tigerbeetle_go.AccountFilterFlags
 	if pAccountFilter.Flags != nil {
-		tbFlags = types.AccountFilterFlags{
+		tbFlags = tigerbeetle_go.AccountFilterFlags{
 			Debits:   lo.FromPtrOr(pAccountFilter.Flags.Debits, false),
 			Credits:  lo.FromPtrOr(pAccountFilter.Flags.Credits, false),
 			Reversed: lo.FromPtrOr(pAccountFilter.Flags.Reversed, false),
 		}
 	}
 
-	return &types.AccountFilter{
+	return &tigerbeetle_go.AccountFilter{
 		AccountID:    *accountID,
 		UserData128:  userData128,
 		UserData64:   lo.FromPtrOr(pAccountFilter.UserData64, 0),
@@ -104,22 +104,22 @@ func AccountFilterFromProtoToTigerbeetle(pAccountFilter *proto.AccountFilter) (*
 	}, nil
 }
 
-func AccountBalanceFromTigerbeetleToProto(tbBalance types.AccountBalance) *proto.AccountBalance {
+func AccountBalanceFromTigerbeetleToProto(tbBalance tigerbeetle_go.AccountBalance) *proto.AccountBalance {
 	return &proto.AccountBalance{
-		DebitsPending:  lo.ToPtr(tbBalance.DebitsPending.BigInt()).Uint64(),
-		DebitsPosted:   lo.ToPtr(tbBalance.DebitsPosted.BigInt()).Uint64(),
-		CreditsPending: lo.ToPtr(tbBalance.CreditsPending.BigInt()).Uint64(),
-		CreditsPosted:  lo.ToPtr(tbBalance.CreditsPosted.BigInt()).Uint64(),
+		DebitsPending:  tbBalance.DebitsPending.BigInt().Uint64(),
+		DebitsPosted:   tbBalance.DebitsPosted.BigInt().Uint64(),
+		CreditsPending: tbBalance.CreditsPending.BigInt().Uint64(),
+		CreditsPosted:  tbBalance.CreditsPosted.BigInt().Uint64(),
 		Timestamp:      tbBalance.Timestamp,
 	}
 }
 
-func HexStringToUint128(hex string) (*types.Uint128, error) {
+func HexStringToUint128(hex string) (*tigerbeetle_go.Uint128, error) {
 	if hex == "" {
-		return &types.Uint128{0}, nil
+		return &tigerbeetle_go.Uint128{0}, nil
 	}
 
-	res, err := types.HexStringToUint128(hex)
+	res, err := tigerbeetle_go.HexStringToUint128(hex)
 	if err != nil {
 		slog.Error("hex string to Uint128 failed", "hex", hex, "error", err)
 		return nil, err
@@ -128,41 +128,75 @@ func HexStringToUint128(hex string) (*types.Uint128, error) {
 
 }
 
-func ResultsToReply(results []types.TransferEventResult, transfers []types.Transfer, err error) []*proto.CreateTransfersReplyItem {
-	replies := make([]*proto.CreateTransfersReplyItem, 0, len(results))
-	for _, r := range results {
-		replies = append(replies, &proto.CreateTransfersReplyItem{
-			Index:  int32(r.Index),
-			Result: proto.CreateTransferResult(r.Result),
-			Id:     transfers[r.Index].ID.String(),
+// AccountResultsToReply converts a 0.17 dense CreateAccounts result slice
+// into proto reply items. Result i corresponds positionally to input account
+// i, so the caller must invoke us with the same accounts slice it submitted.
+func AccountResultsToReply(results []tigerbeetle_go.CreateAccountResult, accounts []tigerbeetle_go.Account) []*proto.CreateAccountsReplyItem {
+	replies := make([]*proto.CreateAccountsReplyItem, 0, len(results))
+	for i, r := range results {
+		_ = accounts[i] // positional invariant: len(results) == len(accounts) in 0.17
+		replies = append(replies, &proto.CreateAccountsReplyItem{
+			Status:    mapAccountStatus(r.Status),
+			Timestamp: r.Timestamp,
 		})
 	}
 	return replies
 }
 
-func QueryFilterFromProtoToTigerbeetle(pFilter *proto.QueryFilter) (*types.QueryFilter, error) {
+// ResultsToReply converts a 0.17 dense CreateTransfers result slice into
+// proto reply items. Same positional invariant as AccountResultsToReply.
+func ResultsToReply(results []tigerbeetle_go.CreateTransferResult, transfers []tigerbeetle_go.Transfer) []*proto.CreateTransfersReplyItem {
+	replies := make([]*proto.CreateTransfersReplyItem, 0, len(results))
+	for i, r := range results {
+		replies = append(replies, &proto.CreateTransfersReplyItem{
+			Status:    mapTransferStatus(r.Status),
+			Id:        transfers[i].ID.String(),
+			Timestamp: r.Timestamp,
+		})
+	}
+	return replies
+}
+
+// mapAccountStatus / mapTransferStatus translate between the native SDK's
+// 0xFFFFFFFF success sentinel and the proto-idiomatic 0. See proto/tigerbeetle.proto
+// for the rationale.
+func mapAccountStatus(s tigerbeetle_go.CreateAccountStatus) proto.CreateAccountStatus {
+	if s == tigerbeetle_go.AccountCreated {
+		return proto.CreateAccountStatus_AccountCreated
+	}
+	return proto.CreateAccountStatus(s)
+}
+
+func mapTransferStatus(s tigerbeetle_go.CreateTransferStatus) proto.CreateTransferStatus {
+	if s == tigerbeetle_go.TransferCreated {
+		return proto.CreateTransferStatus_TransferCreated
+	}
+	return proto.CreateTransferStatus(s)
+}
+
+func QueryFilterFromProtoToTigerbeetle(pFilter *proto.QueryFilter) (*tigerbeetle_go.QueryFilter, error) {
 	if pFilter == nil {
 		return nil, nil
 	}
 
-	var userData128 types.Uint128
+	var userData128 tigerbeetle_go.Uint128
 	if pFilter.UserData128 != nil && *pFilter.UserData128 != "" {
 		var err error
-		userData128, err = types.HexStringToUint128(*pFilter.UserData128)
+		userData128, err = tigerbeetle_go.HexStringToUint128(*pFilter.UserData128)
 		if err != nil {
 			slog.Error("invalid UserData128 hex string", "hex", *pFilter.UserData128, "error", err)
 			return nil, err
 		}
 	}
 
-	var flags types.QueryFilterFlags
+	var flags tigerbeetle_go.QueryFilterFlags
 	if pFilter.Flags != nil {
-		flags = types.QueryFilterFlags{
+		flags = tigerbeetle_go.QueryFilterFlags{
 			Reversed: lo.FromPtrOr(pFilter.Flags.Reversed, false),
 		}
 	}
 
-	return &types.QueryFilter{
+	return &tigerbeetle_go.QueryFilter{
 		UserData128:  userData128,
 		UserData64:   lo.FromPtrOr(pFilter.UserData64, 0),
 		UserData32:   lo.FromPtrOr(pFilter.UserData32, 0),

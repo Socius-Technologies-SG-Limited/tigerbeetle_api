@@ -10,26 +10,26 @@ import (
 	"github.com/charithe/timedbuf/v2"
 	"github.com/lil5/tigerbeetle_api/config"
 	"github.com/stretchr/testify/assert"
-	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
+	tigerbeetle_go "github.com/tigerbeetle/tigerbeetle-go"
 )
 
 func TestParseClusterID(t *testing.T) {
 	t.Run("zero", func(t *testing.T) {
 		id, err := ParseClusterID("0")
 		assert.NoError(t, err)
-		assert.Equal(t, types.ToUint128(0), id)
+		assert.Equal(t, tigerbeetle_go.ToUint128(0), id)
 	})
 
 	t.Run("small value", func(t *testing.T) {
 		id, err := ParseClusterID("12345")
 		assert.NoError(t, err)
-		assert.Equal(t, types.ToUint128(12345), id)
+		assert.Equal(t, tigerbeetle_go.ToUint128(12345), id)
 	})
 
 	t.Run("max uint64", func(t *testing.T) {
 		id, err := ParseClusterID("18446744073709551615")
 		assert.NoError(t, err)
-		assert.Equal(t, types.ToUint128(^uint64(0)), id)
+		assert.Equal(t, tigerbeetle_go.ToUint128(^uint64(0)), id)
 	})
 
 	t.Run("u128 larger than uint64", func(t *testing.T) {

@@ -14,7 +14,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	tigerbeetle_go "github.com/tigerbeetle/tigerbeetle-go"
-	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
 )
 
 const (
@@ -37,8 +36,8 @@ func BenchmarkMockHttpTest(b *testing.B) {
 	})
 	time.Sleep(2 * time.Second)
 
-	account1ID := types.ID().String()
-	account2ID := types.ID().String()
+	account1ID := tigerbeetle_go.ID().String()
+	account2ID := tigerbeetle_go.ID().String()
 
 	httpRequest(b, http.MethodPost, BENCH_TB_API_ADDR+"/accounts/create", gin.H{
 		"accounts": []gin.H{{
@@ -112,15 +111,15 @@ func BenchmarkMockHttpTest(b *testing.B) {
 }
 
 func BenchmarkDirectTbClientComparison(b *testing.B) {
-	tb, _ := tigerbeetle_go.NewClient(types.ToUint128(uint64(BENCH_TB_CLUSTER_ID)), []string{BENCH_TB_ADDRESSES})
+	tb, _ := tigerbeetle_go.NewClient(tigerbeetle_go.ToUint128(uint64(BENCH_TB_CLUSTER_ID)), []string{BENCH_TB_ADDRESSES})
 
-	account1ID := types.ID()
-	account2ID := types.ID()
+	account1ID := tigerbeetle_go.ID()
+	account2ID := tigerbeetle_go.ID()
 
-	f := types.AccountFlags{
+	f := tigerbeetle_go.AccountFlags{
 		History: true,
 	}
-	_, err := tb.CreateAccounts([]types.Account{{
+	_, err := tb.CreateAccounts([]tigerbeetle_go.Account{{
 		ID:             account1ID,
 		DebitsPending:  [16]uint8{0},
 		DebitsPosted:   [16]uint8{0},
@@ -161,8 +160,8 @@ func BenchmarkDirectTbClientComparison(b *testing.B) {
 	b.ResetTimer()
 	b.Run("CreateTransfer", func(b *testing.B) {
 		for range b.N {
-			_, err := tb.CreateTransfers([]types.Transfer{{
-				ID:              types.ID(),
+			_, err := tb.CreateTransfers([]tigerbeetle_go.Transfer{{
+				ID:              tigerbeetle_go.ID(),
 				DebitAccountID:  account1ID,
 				CreditAccountID: account2ID,
 				Amount:          [16]uint8{15},
