@@ -32,8 +32,8 @@ message CreateAccountsReply {
   repeated CreateAccountsReplyItem results = 1;
 }
 message CreateAccountsReplyItem {
-  int32 index = 1;
-  CreateAccountResult result = 2;
+  CreateAccountStatus status = 1;
+  uint64 timestamp = 2;
 }
 message CreateTransfersRequest {
   repeated Transfer transfers = 1;
@@ -42,9 +42,9 @@ message CreateTransfersReply {
   repeated CreateTransfersReplyItem results = 1;
 }
 message CreateTransfersReplyItem {
-  int32 index = 1;
-  CreateTransferResult result = 2;
-  string id = 3;
+  CreateTransferStatus status = 1;
+  string id = 2;
+  uint64 timestamp = 3;
 }
 message LookupAccountsRequest {
   repeated string account_ids = 1;
@@ -179,9 +179,27 @@ message QueryFilterFlags {
 }
 
 // Result enums
-
-enum CreateAccountResult {
-  AccountOK                                    = 0;
+//
+// Note on the "Created" success value:
+// The native TigerBeetle SDK represents a successful create as
+// uint32(0xFFFFFFFF) — picked so failure codes 1..N can never collide
+// with a zero-initialised "unset" field in native memory.
+//
+// Proto3 handles enums differently:
+//   * proto3 requires the first enum value to be 0, so we couldn't put
+//     Created at 0xFFFFFFFF even if we wanted to — we'd have to invent
+//     a placeholder "Unknown = 0" and move Created elsewhere.
+//   * proto3 wire-encodes enums as int32. 0xFFFFFFFF as int32 is -1,
+//     which is awkward for every downstream consumer (negative success
+//     sentinel, larger varint, surprising in logs and JSON).
+//   * proto3 treats an unset enum field as 0 on read. If 0 means success,
+//     an unset field naturally means success — which is what you want.
+//
+// So this gRPC boundary normalises: 0 = success ("Created"), 1..N = the
+// specific failure codes (matching the native SDK's numeric values).
+// grpc/convert.go does the one translation between the two conventions.
+enum CreateAccountStatus {
+  AccountCreated                               = 0;
   AccountLinkedEventFailed                     = 1;
   AccountLinkedEventChainOpen                  = 2;
   AccountImportedEventExpected                 = 22;
@@ -210,8 +228,8 @@ enum CreateAccountResult {
   AccountImportedEventTimestampMustNotRegress  = 26;
 }
 
-enum CreateTransferResult {
-  TransferOK                                               = 0;
+enum CreateTransferStatus {
+  TransferCreated                                          = 0;
   TransferLinkedEventFailed                                = 1;
   TransferLinkedEventChainOpen                             = 2;
   TransferImportedEventExpected                            = 56;
@@ -247,7 +265,6 @@ enum CreateTransferResult {
   TransferPendingIDMustBeDifferent                         = 16;
   TransferTimeoutReservedForPendingTransfer                = 17;
   TransferClosingTransferMustBePending                     = 64;
-  TransferAmountMustNotBeZero                              = 18;
   TransferLedgerMustNotBeZero                              = 19;
   TransferCodeMustNotBeZero                                = 20;
   TransferDebitAccountNotFound                             = 21;
