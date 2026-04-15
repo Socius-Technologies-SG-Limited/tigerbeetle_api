@@ -234,7 +234,7 @@ func (s *App) CreateAccounts(ctx context.Context, in *proto.CreateAccountsReques
 	metrics.TotalCreateAccountsTx.Add(float64(len(accounts)))
 	results, err := s.TB.CreateAccounts(accounts)
 	if err != nil {
-		return nil, err
+		return nil, translateTBError(err)
 	}
 
 	resArr := AccountResultsToReply(results, accounts)
@@ -334,7 +334,7 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 	}
 
 	if err != nil {
-		return nil, err
+		return nil, translateTBError(err)
 	}
 
 	return &proto.CreateTransfersReply{
@@ -358,7 +358,7 @@ func (s *App) LookupAccounts(ctx context.Context, in *proto.LookupAccountsReques
 	metrics.TotalTbLookupAccountsCall.Inc()
 	res, err := s.TB.LookupAccounts(ids)
 	if err != nil {
-		return nil, err
+		return nil, translateTBError(err)
 	}
 
 	pAccounts := lo.Map(res, func(a tigerbeetle_go.Account, _ int) *proto.Account {
@@ -383,7 +383,7 @@ func (s *App) LookupTransfers(ctx context.Context, in *proto.LookupTransfersRequ
 	metrics.TotalTbLookupTransfersCall.Inc()
 	res, err := s.TB.LookupTransfers(ids)
 	if err != nil {
-		return nil, err
+		return nil, translateTBError(err)
 	}
 
 	pTransfers := lo.Map(res, func(a tigerbeetle_go.Transfer, _ int) *proto.Transfer {
@@ -403,7 +403,7 @@ func (s *App) GetAccountTransfers(ctx context.Context, in *proto.GetAccountTrans
 	metrics.TotalTbGetAccountTransfersCall.Inc()
 	res, err := s.TB.GetAccountTransfers(*tbFilter)
 	if err != nil {
-		return nil, err
+		return nil, translateTBError(err)
 	}
 
 	pTransfers := lo.Map(res, func(v tigerbeetle_go.Transfer, _ int) *proto.Transfer {
@@ -423,7 +423,7 @@ func (s *App) GetAccountBalances(ctx context.Context, in *proto.GetAccountBalanc
 	metrics.TotalTbGetAccountBalancesCall.Inc()
 	res, err := s.TB.GetAccountBalances(*tbFilter)
 	if err != nil {
-		return nil, err
+		return nil, translateTBError(err)
 	}
 
 	pBalances := lo.Map(res, func(v tigerbeetle_go.AccountBalance, _ int) *proto.AccountBalance {
@@ -448,7 +448,7 @@ func (s *App) QueryTransfers(ctx context.Context, in *proto.QueryTransfersReques
 	metrics.TotalTbQueryTransfersCall.Inc()
 	res, err := s.TB.QueryTransfers(*tbFilter)
 	if err != nil {
-		return nil, err
+		return nil, translateTBError(err)
 	}
 
 	pTransfers := lo.Map(res, func(v tigerbeetle_go.Transfer, _ int) *proto.Transfer {
@@ -473,7 +473,7 @@ func (s *App) QueryAccounts(ctx context.Context, in *proto.QueryAccountsRequest)
 	metrics.TotalTbQueryAccountsCall.Inc()
 	res, err := s.TB.QueryAccounts(*tbFilter)
 	if err != nil {
-		return nil, err
+		return nil, translateTBError(err)
 	}
 
 	pAccounts := lo.Map(res, func(v tigerbeetle_go.Account, _ int) *proto.Account {

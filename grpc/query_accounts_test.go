@@ -10,6 +10,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	tigerbeetle_go "github.com/tigerbeetle/tigerbeetle-go"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func TestQueryAccounts(t *testing.T) {
@@ -227,7 +229,10 @@ func TestQueryAccounts(t *testing.T) {
 
 		_, err := app.QueryAccounts(context.Background(), req)
 		assert.Error(t, err)
-		assert.Equal(t, tbError, err)
+		st, ok := status.FromError(err)
+		assert.True(t, ok, "error should carry a gRPC status")
+		assert.Equal(t, codes.Internal, st.Code())
+		assert.Contains(t, st.Message(), tbError.Error())
 		mockClient.AssertExpectations(t)
 	})
 
